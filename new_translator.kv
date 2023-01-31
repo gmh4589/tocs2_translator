@@ -1,0 +1,160 @@
+#:import Factory kivy.factory.Factory
+<MainScreen>:
+    BoxLayout:
+        id: mainScreen
+        orientation: 'vertical'
+        canvas:
+			Color:
+				rgba:(.21, .56, .18, 1)
+			Rectangle:
+				pos: self.pos
+				size: self.size
+		BoxLayout:
+		    id: upPanel
+		    size_hint: (1, .115)
+            padding: [10]
+            spacing: 3
+            ##icon resource from - https://icons8.com/icon
+            Button:
+                id: openBTN
+                background_normal: './data/icon/open.png'
+                size_hint_max_x: 50
+                size_hint_max_y: 50
+                on_press: root.fileOpen()
+            Button:
+                id: saveBTN
+                background_normal: './data/icon/save.png'
+                size_hint_max_x: 50
+                size_hint_max_y: 50
+				on_release: root.writeFile()
+            Button:
+                id: saveBTN
+                background_normal: './data/icon/backup.png'
+                size_hint_max_x: 50
+                size_hint_max_y: 50
+				on_release: root.createBackup()
+            Button:
+                id: backBTN
+                background_normal: './data/icon/left_arrow.png'
+                size_hint_max_x: 50
+                size_hint_max_y: 50
+		        on_press: root.nextString('-')
+            Button
+                id: forwardBTN
+                background_normal: './data/icon/right_arrow.png'
+                size_hint_max_x: 50
+                size_hint_max_y: 50
+		        on_press: root.nextString()
+            Button:
+                id: returnBTN
+                background_normal: './data/icon/refresh.png'
+                size_hint_max_x: 50
+                size_hint_max_y: 50
+                on_press: root.reFresh()
+
+            ##Button:
+            ##    id: tlBtn
+            ##    background_normal: './data/icon/translate.png'
+            ##    size_hint_max_x: 50
+            ##    size_hint_max_y: 50
+
+            ##Button:
+            ##    id: settingBTN
+            ##    background_normal: './data/icon/setting.png'
+            ##    size_hint_max_x: 50
+            ##    size_hint_max_y: 50
+			##    on_release: Factory.SettingPopup().open()
+
+			Label:
+                text: 'Найти:'
+                size_hint: .3, 1
+            TextInput:
+                id: text4find
+			Label:
+                text: 'Заменить:'
+                size_hint: .5, 1
+            TextInput:
+                id: text4replace
+
+            Button:
+                id: returnBTN
+                background_normal: './data/icon/find.png'
+                size_hint_max_x: 50
+                size_hint_max_y: 50
+                on_press: root.findBTN()
+
+        BoxLayout:
+            id: textBox
+            size_hint: (1, .7)
+            padding: [10]
+            spacing: 10
+            Label:
+                id: originalTXT
+            TextInput:
+                id: newTXT
+        BoxLayout:
+            id: downPanel
+		    size_hint: (1, .17)
+		    GridLayout:
+		        rows: 2
+		        cols: 2
+		        Label:
+		            id: rdyLabel
+                    font_size: 25
+		            text: '0/0 готово'
+		        Label:
+		            id: longLabel
+                    font_size: 25
+		            text: '0 символов'
+		    BoxLayout:
+		        BoxLayout:
+		            size_hint: (.75, 1)
+		            padding: 10
+		            spacing: 5
+		            Button:
+		                id: fBTN
+		                text: 'ДАЛЬШЕ'
+		                on_press: root.nextString()
+		            BoxLayout:
+		                orientation: 'vertical'
+		                CodeInput:
+		                    id: gotoInput
+                        Button:
+                            id: gotoBTN
+                            text: 'ПЕРЕЙТИ К...'
+		                    on_press: root.gotoBTN()
+		        BoxLayout:
+		            size_hint: (.25, 1)
+		            Label:
+		                id: percentLabel
+		                font_size: 25
+		                text: '0 %'
+
+<EOFPopup@Popup>:
+    auto_dismiss: False
+    title: 'Предупреждение'
+    size_hint: None, None
+    size: 220, 200
+    BoxLayout:
+        orientation: 'vertical'
+        Label:
+            text: "Конец файла!\nСохраните перевод!"
+        BoxLayout:
+            orientation: 'horizontal'
+            spacing: 10
+            padding: 10
+            Button:
+                text: 'OK'
+                on_release: root.dismiss()
+
+<SavedPopup@Popup>:
+    auto_dismiss: False
+    title: 'Настройки'
+    size_hint: None, None
+    size: 200, 200
+    Button:
+        text: 'Сохранено!'
+        background_normal: ''
+        background_down: ''
+        background_color: .21, .56, .18, 1
+        on_release: root.dismiss()
