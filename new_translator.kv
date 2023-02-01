@@ -52,29 +52,35 @@
                 size_hint_max_y: 50
                 on_press: root.reFresh()
 
-            ##Button:
-            ##    id: tlBtn
-            ##    background_normal: './data/icon/translate.png'
-            ##    size_hint_max_x: 50
-            ##    size_hint_max_y: 50
+            Button:
+                id: tlBtn
+                background_normal: './data/icon/translate.png'
+                size_hint_max_x: 50
+                size_hint_max_y: 50
+                on_press: root.translate()
 
-            ##Button:
-            ##    id: settingBTN
-            ##    background_normal: './data/icon/setting.png'
-            ##    size_hint_max_x: 50
-            ##    size_hint_max_y: 50
-			##    on_release: Factory.SettingPopup().open()
+            Button:
+                id: settingBTN
+                background_normal: './data/icon/setting.png'
+                size_hint_max_x: 50
+                size_hint_max_y: 50
+			    on_press:root.manager.current = 'setting'
 
-			Label:
-                text: 'Найти:'
-                size_hint: .3, 1
-            TextInput:
-                id: text4find
-			Label:
-                text: 'Заменить:'
-                size_hint: .5, 1
-            TextInput:
-                id: text4replace
+            BoxLayout:
+                orientation: 'vertical'
+                Label:
+                    text: 'Найти:'
+                    size_hint: .3, 1
+                TextInput:
+                    id: text4find
+
+            BoxLayout:
+                orientation: 'vertical'
+                Label:
+                    text: 'Заменить:'
+                    size_hint: .5, 1
+                TextInput:
+                    id: text4replace
 
             Button:
                 id: returnBTN
@@ -92,6 +98,7 @@
                 id: originalTXT
             TextInput:
                 id: newTXT
+
         BoxLayout:
             id: downPanel
 		    size_hint: (1, .17)
@@ -149,7 +156,7 @@
 
 <SavedPopup@Popup>:
     auto_dismiss: False
-    title: 'Настройки'
+    title: 'Сообщение'
     size_hint: None, None
     size: 200, 200
     Button:
@@ -158,3 +165,118 @@
         background_down: ''
         background_color: .21, .56, .18, 1
         on_release: root.dismiss()
+
+<SettingScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        canvas:
+			Color:
+				rgba:(.21, .56, .18, 1)
+			Rectangle:
+				pos: self.pos
+				size: self.size
+
+        BoxLayout:
+            size_hint: (1, .7)
+            padding: [50]
+            spacing: 10
+            orientation: 'vertical'
+
+            BoxLayout:
+                Label:
+                    text: 'Период автосохранений\n(в секундах)\nЧтобы отключить, введите 0'
+                    font_size: 20
+                TextInput:
+                    id: autoSavePeriod
+                    font_size: 50
+
+            BoxLayout:
+                Label:
+                    text: 'Период создания бекапов\n(в секундах)\nЧтобы отключить, введите 0'
+                    font_size: 20
+                TextInput:
+                    id: backupPeriod
+                    font_size: 50
+
+            BoxLayout:
+                size_hint: (1, .1)
+
+            BoxLayout:
+                Label:
+                    text: 'Онлайн-переводчик'
+                    font_size: 25
+
+                GridLayout:
+                    id: translatorBox
+                    cols: 6
+                    Label:
+                        text: "Yandex"
+                        size_hint_x: None
+                        width: 100
+                        font_size: 20
+                    CheckBox:
+                        group: "translator"
+                        id: Yandex
+                        size_hint_x: None
+                        width: 10
+                        on_active: root.checkboxClick("Yandex")
+
+                    Label:
+                        text: "Google"
+                        size_hint_x: None
+                        width: 100
+                        font_size: 20
+                    CheckBox:
+                        group: "translator"
+                        id: Google
+                        size_hint_x: None
+                        width: 10
+                        on_active: root.checkboxClick("Google")
+
+                    Label:
+                        text: "Bing"
+                        size_hint_x: None
+                        width: 100
+                        font_size: 20
+                    CheckBox:
+                        group: "translator"
+                        id: Bing
+                        size_hint_x: None
+                        width: 10
+                        on_active: root.checkboxClick("Bing")
+
+                    Label:
+                        text: "DeepL"
+                        size_hint_x: None
+                        width: 100
+                        font_size: 20
+                    CheckBox:
+                        group: "translator"
+                        id: DeepL
+                        size_hint_x: None
+                        width: 10
+                        on_active: root.checkboxClick("DeepL")
+
+                    Label:
+                        text: "Promt"
+                        size_hint_x: None
+                        width: 100
+                        font_size: 20
+                    CheckBox:
+                        group: "translator"
+                        id: Promt
+                        size_hint_x: None
+                        width: 10
+                        on_active: root.checkboxClick("Promt")
+
+        BoxLayout:
+            size_hint: (1, .2)
+            padding: [10]
+            spacing: 3
+            Button:
+                text: 'Сохранить'
+                on_press: root.setSetting()
+
+            Button:
+                text: 'Отмена'
+                on_press: root.manager.current = 'main'
