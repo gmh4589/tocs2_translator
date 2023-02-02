@@ -12,8 +12,6 @@ from kivy.app import App
 from kivy.factory import Factory
 from kivy.lang import Builder
 from kivy.clock import Clock
-from kivy.uix.popup import Popup
-from kivy.uix.progressbar import ProgressBar
 from kivy.uix.screenmanager import ScreenManager, Screen
 
 from tkinter import filedialog as fd
@@ -73,7 +71,11 @@ class MainScreen(Screen):
             rows = self.sheet.max_row
             cols = self.sheet.max_column
 
+            p = 0
             for row in range(1, rows):
+                n = int((100/rows) * row)
+                if n != p: print(f'ЗАГРУЗКА {n}%...')
+                p = n
                 for col in range(1, cols):
                     cell = self.sheet.cell(row = row, column = col).value
 
@@ -81,6 +83,7 @@ class MainScreen(Screen):
                         val = [self.sheet.cell(row = row + 1, column = col).value, '', row + 1, col]
                         self.values.append(val)
 
+            print('ФАЙЛ ЗАГРУЖЕН!')
             self.upd()
 
             print(self.values)
@@ -227,10 +230,9 @@ class SettingScreen(Screen):
 
         self.manager.current = 'main'
 
-
 class NewTranslatorApp(App):
 
-    # Создаёт  интерфейс
+    # Создаёт интерфейс
     def build(self):
         sm = ScreenManager()
         sm.add_widget(MainScreen(name = 'main'))

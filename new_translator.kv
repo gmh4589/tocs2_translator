@@ -70,17 +70,19 @@
                 orientation: 'vertical'
                 Label:
                     text: 'Найти:'
-                    size_hint: .3, 1
+                    size_hint: .35, .4
                 TextInput:
                     id: text4find
+                    size_hint: 1, .6
 
             BoxLayout:
                 orientation: 'vertical'
                 Label:
                     text: 'Заменить:'
-                    size_hint: .5, 1
+                    size_hint: .5, .4
                 TextInput:
                     id: text4replace
+                    size_hint: 1, .6
 
             Button:
                 id: returnBTN
@@ -108,11 +110,9 @@
 		        Label:
 		            id: rdyLabel
                     font_size: 25
-		            text: '0/0 готово'
 		        Label:
 		            id: longLabel
                     font_size: 25
-		            text: '0 символов'
 		    BoxLayout:
 		        BoxLayout:
 		            size_hint: (.75, 1)
@@ -135,7 +135,6 @@
 		            Label:
 		                id: percentLabel
 		                font_size: 25
-		                text: '0 %'
 
 <EOFPopup@Popup>:
     auto_dismiss: False
@@ -280,3 +279,13 @@
             Button:
                 text: 'Отмена'
                 on_press: root.manager.current = 'main'
+
+<ProgressPopup@Popup>
+    auto_dismiss: False
+    title: 'Загрузка файла...'
+    size_hint: None, None
+    size: 200, 200
+    Button:
+        text: 'Сохранено!'
+        background_normal: './data/icon/download.gif'
+        background_color: .21, .56, .18, 1
