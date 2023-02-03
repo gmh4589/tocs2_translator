@@ -9,42 +9,49 @@
 			Rectangle:
 				pos: self.pos
 				size: self.size
+
 		BoxLayout:
 		    id: upPanel
 		    size_hint: (1, .115)
             padding: [10]
             spacing: 3
             ##icon resource from - https://icons8.com/icon
+
             Button:
                 id: openBTN
                 background_normal: './data/icon/open.png'
                 size_hint_max_x: 50
                 size_hint_max_y: 50
                 on_press: root.fileOpen()
+
             Button:
                 id: saveBTN
                 background_normal: './data/icon/save.png'
                 size_hint_max_x: 50
                 size_hint_max_y: 50
 				on_release: root.writeFile()
+
             Button:
                 id: saveBTN
                 background_normal: './data/icon/backup.png'
                 size_hint_max_x: 50
                 size_hint_max_y: 50
 				on_release: root.createBackup()
+
             Button:
                 id: backBTN
                 background_normal: './data/icon/left_arrow.png'
                 size_hint_max_x: 50
                 size_hint_max_y: 50
 		        on_press: root.nextString('-')
+
             Button
                 id: forwardBTN
                 background_normal: './data/icon/right_arrow.png'
                 size_hint_max_x: 50
                 size_hint_max_y: 50
 		        on_press: root.nextString()
+
             Button:
                 id: returnBTN
                 background_normal: './data/icon/refresh.png'
@@ -96,8 +103,9 @@
             size_hint: (1, .7)
             padding: [10]
             spacing: 10
-            Label:
+            TextInput:
                 id: originalTXT
+                readonly: True
             TextInput:
                 id: newTXT
 
@@ -113,11 +121,13 @@
 		        Label:
 		            id: longLabel
                     font_size: 25
+
 		    BoxLayout:
 		        BoxLayout:
 		            size_hint: (.75, 1)
 		            padding: 10
 		            spacing: 5
+
 		            Button:
 		                id: fBTN
 		                text: 'ДАЛЬШЕ'
