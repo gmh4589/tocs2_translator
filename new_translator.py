@@ -31,7 +31,15 @@ except KeyError: lastPath = os.environ['USERPROFILE'] + '/Desktop'
 # Загружает конфиг интерфейса
 Builder.load_file('new_translator.kv')
 
-class MainScreen(Screen):
+class Colors:
+    r = float(setting['Color']['r']) if float(setting['Color']['r']) <= 1 else 1/255 * int(setting['Color']['r'])
+    g = float(setting['Color']['g']) if float(setting['Color']['g']) <= 1 else 1/255 * int(setting['Color']['g'])
+    b = float(setting['Color']['b']) if float(setting['Color']['b']) <= 1 else 1/255 * int(setting['Color']['b'])
+    a = float(setting['Color']['a']) if float(setting['Color']['a']) <= 1 else 1/255 * int(setting['Color']['a'])
+
+    print(r, g, b, a)
+
+class MainScreen(Screen, Colors):
 
     values = []
     filename = ''
@@ -168,7 +176,9 @@ class MainScreen(Screen):
             self.ids['originalTXT'].text = str(self.values[self.sss][0])
             self.ids['rdyLabel'].text = str(self.sss + 1) + '/' + str(len(self.values)) + ' готово'
             self.ids['longLabel'].text = str(len(self.values[self.sss][0])) + ' символов'
-            self.ids['percentLabel'].text = str(round(100 / len(self.values) * (self.sss + 1), 2)) + ' %'
+            percent = round(100 / len(self.values) * (self.sss + 1), 2)
+            self.ids['percentLabel'].text = str(percent) + ' %'
+            self.ids['progressBar'].value = percent
 
         except IndexError: pass
 
@@ -192,10 +202,12 @@ class MainScreen(Screen):
         print(self.values)
 
     def upd(self):
-        if str(self.values[self.sss][1]) == '':
-            self.ids['newTXT'].text = str(self.values[self.sss][0])
-        else:
-            self.ids['newTXT'].text = str(self.values[self.sss][1])
+        try:
+            if str(self.values[self.sss][1]) == '':
+                self.ids['newTXT'].text = str(self.values[self.sss][0])
+            else:
+                self.ids['newTXT'].text = str(self.values[self.sss][1])
+        except IndexError: mb.showinfo(title = 'Сообщение', message = 'В файле не найдено текста для перевода!')
 
     def gotoBTN(self):
         try:
@@ -216,7 +228,7 @@ class MainScreen(Screen):
         t = self.ids['newTXT'].text.replace('#', '')
         if t != '' and site != '': webbrowser.open(site + t)
 
-class SettingScreen(Screen):
+class SettingScreen(Screen, Colors):
 
     tl = ''
 
@@ -227,6 +239,8 @@ class SettingScreen(Screen):
 
         self.ids[translator].state = 'down'
 
+
+
     def checkboxClick(self, tl1): self.tl = tl1
 
     def setSetting(self):
@@ -234,6 +248,13 @@ class SettingScreen(Screen):
         setting.set('Main', 'autosave', self.ids['autoSavePeriod'].text)
         setting.set('Main', 'backup', self.ids['backupPeriod'].text)
         setting.set('Main', 'translator', self.tl)
+
+        h = self.ids['colorPicker'].hex_color[1:]
+
+        setting.set('Color', 'r', str(int(h[:2], 16)))
+        setting.set('Color', 'g', str(int(h[2:4], 16)))
+        setting.set('Color', 'b', str(int(h[4:6], 16)))
+        setting.set('Color', 'a', str(int(h[6:], 16)))
 
         with open('setting.ini', "w") as config_file:
             setting.write(config_file)

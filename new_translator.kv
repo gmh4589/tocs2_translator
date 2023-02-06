@@ -3,16 +3,18 @@
     BoxLayout:
         id: mainScreen
         orientation: 'vertical'
+
         canvas:
 			Color:
-				rgba:(.21, .56, .18, 1)
+				rgba:(1, 1, 1, .25)
 			Rectangle:
 				pos: self.pos
 				size: self.size
+                source: "data/color.png"
 
-		BoxLayout:
-		    id: upPanel
-		    size_hint: (1, .115)
+        BoxLayout:
+            id: upPanel
+            size_hint: (1, .115)
             padding: [10]
             spacing: 3
             ##icon resource from - https://icons8.com/icon
@@ -29,28 +31,28 @@
                 background_normal: './data/icon/save.png'
                 size_hint_max_x: 50
                 size_hint_max_y: 50
-				on_release: root.writeFile()
+                on_release: root.writeFile()
 
             Button:
                 id: saveBTN
                 background_normal: './data/icon/backup.png'
                 size_hint_max_x: 50
                 size_hint_max_y: 50
-				on_release: root.createBackup()
+                on_release: root.createBackup()
 
             Button:
                 id: backBTN
                 background_normal: './data/icon/left_arrow.png'
                 size_hint_max_x: 50
                 size_hint_max_y: 50
-		        on_press: root.nextString('-')
+                on_press: root.nextString('-')
 
             Button
                 id: forwardBTN
                 background_normal: './data/icon/right_arrow.png'
                 size_hint_max_x: 50
                 size_hint_max_y: 50
-		        on_press: root.nextString()
+                on_press: root.nextString()
 
             Button:
                 id: returnBTN
@@ -71,25 +73,32 @@
                 background_normal: './data/icon/setting.png'
                 size_hint_max_x: 50
                 size_hint_max_y: 50
-			    on_press:root.manager.current = 'setting'
+                on_press:root.manager.current = 'setting'
 
-            BoxLayout:
-                orientation: 'vertical'
-                Label:
-                    text: 'Найти:'
-                    size_hint: .35, .4
-                TextInput:
-                    id: text4find
-                    size_hint: 1, .6
+            Button:
+                background_normal: ''
+                background_down: ''
+                background_color: (0, 0, 0, 0)
 
-            BoxLayout:
-                orientation: 'vertical'
-                Label:
-                    text: 'Заменить:'
-                    size_hint: .5, .4
-                TextInput:
-                    id: text4replace
-                    size_hint: 1, .6
+            Button:
+                background_normal: ''
+                background_down: ''
+                background_color: (0, 0, 0, 0)
+
+            Button:
+                background_normal: ''
+                background_down: ''
+                background_color: (0, 0, 0, 0)
+
+            Button:
+                background_normal: ''
+                background_down: ''
+                background_color: (0, 0, 0, 0)
+
+            Button:
+                background_normal: ''
+                background_down: ''
+                background_color: (0, 0, 0, 0)
 
             Button:
                 id: returnBTN
@@ -99,19 +108,64 @@
                 on_press: root.findBTN()
 
         BoxLayout:
+            size_hint: (1, .1)
+            GridLayout:
+                cols: 2
+                rows: 2
+                padding: [10, 0, 10, 0]
+                spacing: 10
+                Label:
+                    text: 'Найти:'
+                    font_size: 20
+                    size_hint: .2, .2
+                Label:
+                    text: 'Заменить:'
+                    font_size: 20
+                    size_hint: .2, .2
+                TextInput:
+                    id: text4find
+                    size_hint: 1, .8
+                    background_color: (0, 0, 0, .75)
+                    foreground_color: (1, 1, 1, .5)
+                TextInput:
+                    id: text4replace
+                    size_hint: 1, .8
+                    background_color: (0, 0, 0, .75)
+                    foreground_color: (1, 1, 1, .5)
+
+        BoxLayout:
+            size_hint: (1, .05)
+            GridLayout:
+                cols: 2
+                rows: 1
+                Label:
+                    text: '\nОригинал:'
+                    font_size: 20
+                    size_hint: .2, .2
+                Label:
+                    text: '\nПеревод:'
+                    font_size: 20
+                    size_hint: .2, .2
+        BoxLayout:
             id: textBox
-            size_hint: (1, .7)
+            size_hint: (1, .575)
             padding: [10]
             spacing: 10
             TextInput:
                 id: originalTXT
+                background_color: (0, 0, 0, .75)
+                foreground_color: (1, 1, 1, .5)
+                font_size: 20
                 readonly: True
             TextInput:
                 id: newTXT
+                background_color: (0, 0, 0, .75)
+                foreground_color: (1, 1, 1, .5)
+                font_size: 20
 
         BoxLayout:
             id: downPanel
-		    size_hint: (1, .17)
+		    size_hint: (1, .15)
 		    GridLayout:
 		        rows: 2
 		        cols: 2
@@ -136,6 +190,8 @@
 		                orientation: 'vertical'
 		                CodeInput:
 		                    id: gotoInput
+                            background_color: (0, 0, 0, .75)
+                            foreground_color: (1, 1, 1, .5)
                         Button:
                             id: gotoBTN
                             text: 'ПЕРЕЙТИ К...'
@@ -145,6 +201,22 @@
 		            Label:
 		                id: percentLabel
 		                font_size: 25
+
+		BoxLayout:
+		    size_hint: (1, .01)
+		    ProgressBar:
+		        id: progressBar
+                canvas:
+                    BorderImage:
+                        border: (12, 12, 12, 12)
+                        pos: self.x, self.center_y - 12
+                        size: self.width, 16
+                        source: 'data/grey.png'
+                    BorderImage:
+                        border: [int(min(self.width * (self.value / float(self.max)) if self.max else 0, 12))] * 4
+                        pos: self.x, self.center_y - 12
+                        size: self.width * (self.value / float(self.max)) if self.max else 0, 16
+                        source: 'data/green.png'
 
 <EOFPopup@Popup>:
     auto_dismiss: False
@@ -180,37 +252,45 @@
         orientation: 'vertical'
         canvas:
 			Color:
-				rgba:(.21, .56, .18, 1)
+				rgba:(root.r, root.g, root.b, root.a)
 			Rectangle:
 				pos: self.pos
 				size: self.size
 
         BoxLayout:
             size_hint: (1, .7)
-            padding: [50]
+            padding: [0, 10, 0, 10]
             spacing: 10
             orientation: 'vertical'
 
             BoxLayout:
-                Label:
-                    text: 'Период автосохранений\n(в секундах)\nЧтобы отключить, введите 0'
-                    font_size: 20
-                TextInput:
-                    id: autoSavePeriod
-                    font_size: 50
+                spacing: 10
+                size_hint: 1, .5
+                padding: [50, 0, 50, 0]
+                GridLayout:
+                    cols: 2
+                    rows: 2
+                    spacing: 50
+                    Label:
+                        text: 'Период автосохранений\n(в секундах)\nЧтобы отключить, введите 0'
+                        font_size: 20
+                    TextInput:
+                        id: autoSavePeriod
+                        font_size: 50
+
+                    Label:
+                        text: 'Период создания бекапов\n(в секундах)\nЧтобы отключить, введите 0'
+                        font_size: 20
+                    TextInput:
+                        id: backupPeriod
+                        font_size: 50
+
+#                BoxLayout:
+#                    ColorPicker:
+#                        id: colorPicker
 
             BoxLayout:
-                Label:
-                    text: 'Период создания бекапов\n(в секундах)\nЧтобы отключить, введите 0'
-                    font_size: 20
-                TextInput:
-                    id: backupPeriod
-                    font_size: 50
-
-            BoxLayout:
-                size_hint: (1, .1)
-
-            BoxLayout:
+                size_hint: 1, .2
                 Label:
                     text: 'Онлайн-переводчик'
                     font_size: 25
@@ -278,24 +358,14 @@
                         width: 10
                         on_active: root.checkboxClick("Promt")
 
-        BoxLayout:
-            size_hint: (1, .2)
-            padding: [10]
-            spacing: 3
-            Button:
-                text: 'Сохранить'
-                on_press: root.setSetting()
+            BoxLayout:
+                size_hint: (1, .2)
+                padding: [10]
+                spacing: 3
+                Button:
+                    text: 'Сохранить'
+                    on_press: root.setSetting()
 
-            Button:
-                text: 'Отмена'
-                on_press: root.manager.current = 'main'
-
-<ProgressPopup@Popup>
-    auto_dismiss: False
-    title: 'Загрузка файла...'
-    size_hint: None, None
-    size: 200, 200
-    Button:
-        text: 'Сохранено!'
-        background_normal: './data/icon/download.gif'
-        background_color: .21, .56, .18, 1
+                Button:
+                    text: 'Отмена'
+                    on_press: root.manager.current = 'main'
