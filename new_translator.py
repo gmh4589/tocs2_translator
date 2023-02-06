@@ -54,47 +54,50 @@ class MainScreen(Screen, Colors):
         Clock.schedule_interval(self.backups, backup)
 
     def fileOpen(self):
+        if not self.values:
+            filetypes = (
+                ('Файлы Excel', '*.xlsx'),
+                ('All files', '*.*')
+            )
 
-        filetypes = (
-            ('Файлы Excel', '*.xlsx'),
-            ('All files', '*.*')
-        )
+            self.filename = fd.askopenfilename(
+                title = 'Выберите XLSX файл',
+                initialdir = lastPath,
+                filetypes = filetypes)
 
-        self.filename = fd.askopenfilename(
-            title = 'Выберите XLSX файл',
-            initialdir = lastPath,
-            filetypes = filetypes)
+            if self.filename != '':
 
-        if self.filename != '':
+                print(self.filename)
+                fName = self.filename.split('/')[-1]
+                setting.set('Main', 'path', self.filename.replace(fName, ''))
 
-            print(self.filename)
-            fName = self.filename.split('/')[-1]
-            setting.set('Main', 'path', self.filename.replace(fName, ''))
+                with open('setting.ini', "w") as config_file:
+                    setting.write(config_file)
 
-            with open('setting.ini', "w") as config_file:
-                setting.write(config_file)
+                self.readData = openpyxl.load_workbook(self.filename, data_only = True)
+                self.sheet = self.readData.active
+                rows = self.sheet.max_row
+                cols = self.sheet.max_column
 
-            self.readData = openpyxl.load_workbook(self.filename, data_only = True)
-            self.sheet = self.readData.active
-            rows = self.sheet.max_row
-            cols = self.sheet.max_column
+                p = 0
+                for row in range(1, rows):
+                    n = int((100/rows) * row)
+                    if n != p and n % 10 == 0: print(f'ЗАГРУЗКА {n}%...')
+                    p = n
+                    for col in range(1, cols):
+                        cell = self.sheet.cell(row = row, column = col).value
 
-            p = 0
-            for row in range(1, rows):
-                n = int((100/rows) * row)
-                if n != p and n % 10 == 0: print(f'ЗАГРУЗКА {n}%...')
-                p = n
-                for col in range(1, cols):
-                    cell = self.sheet.cell(row = row, column = col).value
+                        if cell == 'dialog':
+                            val = [self.sheet.cell(row = row + 1, column = col).value, '', row + 1, col]
+                            self.values.append(val)
 
-                    if cell == 'dialog':
-                        val = [self.sheet.cell(row = row + 1, column = col).value, '', row + 1, col]
-                        self.values.append(val)
+                if self.values:
+                    print('ФАЙЛ ЗАГРУЖЕН!')
+                    self.nextString(0)
+                else: mb.showinfo(title = 'Сообщение', message = 'В файле не найдено текста для перевода!')
 
-            print('ФАЙЛ ЗАГРУЖЕН!')
-            self.upd()
-
-            print(self.values)
+                print(self.values)
+        else: mb.showinfo('СООБЩЕНИЕ', 'Сначала закройте открытый файл!')
 
     def writeFile(self, auto = 0):
 
@@ -124,6 +127,16 @@ class MainScreen(Screen, Colors):
 
     def backups(self, dt):
         if self.filename != '' and backup != 0: self.createBackup()
+
+    def closeFile(self):
+        self.values = []
+        self.ids['originalTXT'].text = ''
+        self.ids['newTXT'].text = ''
+        self.ids['rdyLabel'].text = ''
+        self.ids['longLabel'].text = ''
+        self.ids['percentLabel'].text = ''
+        self.ids['progressBar'].value = 0
+        mb.showinfo('Сообщение', f'Файл {self.filename} закрыт!')
 
     def nextString(self, step = '+'):
 
@@ -202,12 +215,10 @@ class MainScreen(Screen, Colors):
         print(self.values)
 
     def upd(self):
-        try:
-            if str(self.values[self.sss][1]) == '':
-                self.ids['newTXT'].text = str(self.values[self.sss][0])
-            else:
-                self.ids['newTXT'].text = str(self.values[self.sss][1])
-        except IndexError: mb.showinfo(title = 'Сообщение', message = 'В файле не найдено текста для перевода!')
+        if str(self.values[self.sss][1]) == '':
+            self.ids['newTXT'].text = str(self.values[self.sss][0])
+        else:
+            self.ids['newTXT'].text = str(self.values[self.sss][1])
 
     def gotoBTN(self):
         try:
@@ -238,8 +249,6 @@ class SettingScreen(Screen, Colors):
         self.ids['backupPeriod'].text = str(backup)
 
         self.ids[translator].state = 'down'
-
-
 
     def checkboxClick(self, tl1): self.tl = tl1
 

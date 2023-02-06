@@ -76,9 +76,11 @@
                 on_press:root.manager.current = 'setting'
 
             Button:
-                background_normal: ''
-                background_down: ''
-                background_color: (0, 0, 0, 0)
+                id: settingBTN
+                background_normal: './data/icon/close.png'
+                size_hint_max_x: 50
+                size_hint_max_y: 50
+                on_press: root.closeFile()
 
             Button:
                 background_normal: ''
