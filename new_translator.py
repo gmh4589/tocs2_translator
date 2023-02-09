@@ -25,8 +25,7 @@ autosave = int(setting['Main']['autosave'])
 backup = int(setting['Main']['backup'])
 translator = setting['Main']['translator']
 
-try:
-    lastPath = setting['Main']['path']
+try: lastPath = setting['Main']['path']
 except KeyError: lastPath = os.environ['USERPROFILE'] + '/Desktop'
 
 # Загружает конфиг интерфейса
@@ -59,15 +58,12 @@ class MainScreen(Screen, Colors):
 
     def fileOpen(self):
         if not self.values:
-            filetypes = (
-                ('Файлы Excel', '*.xlsx'),
-                ('All files', '*.*')
-            )
+            filetypes = (('Файлы Excel', '*.xlsx'),
+                        ('All files', '*.*'))
 
-            self.filename = fd.askopenfilename(
-                title = 'Выберите XLSX файл',
-                initialdir = lastPath,
-                filetypes = filetypes)
+            self.filename = fd.askopenfilename(title = 'Выберите XLSX файл',
+                                                initialdir = lastPath,
+                                                filetypes = filetypes)
 
             if self.filename != '':
 
@@ -100,7 +96,7 @@ class MainScreen(Screen, Colors):
                     self.nextString(0)
                 else: mb.showinfo(title = 'Сообщение', message = 'В файле не найдено текста для перевода!')
 
-                print(self.values)
+                #print(self.values)
         else: mb.showinfo('СООБЩЕНИЕ', 'Сначала закройте открытый файл!')
 
     def writeFile(self, auto = 0):
@@ -186,7 +182,7 @@ class MainScreen(Screen, Colors):
             self.ids['originalTXT'].text = ttt
 
         except IndexError: Factory.EOFPopup().open()
-        print(self.values)
+        #print(self.values)
 
     def update(self, dt):
         try:
