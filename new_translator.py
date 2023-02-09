@@ -13,6 +13,7 @@ from kivy.factory import Factory
 from kivy.lang import Builder
 from kivy.clock import Clock
 from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.uix.widget import Widget
 
 from tkinter import filedialog as fd
 from tkinter import messagebox as mb
@@ -31,12 +32,15 @@ except KeyError: lastPath = os.environ['USERPROFILE'] + '/Desktop'
 # Загружает конфиг интерфейса
 Builder.load_file('new_translator.kv')
 
+class Dummy(Widget): pass
+
 class Colors:
     r = float(setting['Color']['r']) if float(setting['Color']['r']) <= 1 else 1/255 * int(setting['Color']['r'])
     g = float(setting['Color']['g']) if float(setting['Color']['g']) <= 1 else 1/255 * int(setting['Color']['g'])
     b = float(setting['Color']['b']) if float(setting['Color']['b']) <= 1 else 1/255 * int(setting['Color']['b'])
     a = float(setting['Color']['a']) if float(setting['Color']['a']) <= 1 else 1/255 * int(setting['Color']['a'])
 
+    inputSize = float(setting['Size']['text'])
     print(r, g, b, a)
 
 class MainScreen(Screen, Colors):
@@ -195,6 +199,19 @@ class MainScreen(Screen, Colors):
 
         except IndexError: pass
 
+        s = configparser.ConfigParser()
+        s.read('setting.ini')
+
+        iS = float(s['Size']['text'])
+
+        if iS != self.inputSize:
+            self.inputSize = iS
+            self.ids['text4find'].size_hint = (1, iS/10)
+            self.ids['text4replace'].size_hint = (1, iS/10)
+            self.ids['originalTXT'].size_hint = (1, .9 - iS/10)
+            self.ids['newTXT'].size_hint = (1, .9 - iS/10)
+
+
     def reFresh(self):
         self.ids['newTXT'].text = self.ids['originalTXT'].text
 
@@ -250,6 +267,8 @@ class SettingScreen(Screen, Colors):
 
         self.ids[translator].state = 'down'
 
+        Clock.schedule_interval(self.update, .1)
+
     def checkboxClick(self, tl1): self.tl = tl1
 
     def setSetting(self):
@@ -258,17 +277,17 @@ class SettingScreen(Screen, Colors):
         setting.set('Main', 'backup', self.ids['backupPeriod'].text)
         setting.set('Main', 'translator', self.tl)
 
-        h = self.ids['colorPicker'].hex_color[1:]
-
-        setting.set('Color', 'r', str(int(h[:2], 16)))
-        setting.set('Color', 'g', str(int(h[2:4], 16)))
-        setting.set('Color', 'b', str(int(h[4:6], 16)))
-        setting.set('Color', 'a', str(int(h[6:], 16)))
+        setting.set('Color', 'a', self.ids['alphaInfo'].text)
+        setting.set('Size', 'text', self.ids['sizeInfo'].text)
 
         with open('setting.ini', "w") as config_file:
             setting.write(config_file)
 
         self.manager.current = 'main'
+
+    def update(self, dt):
+        self.ids['sizeInfo'].text = str(round(self.ids['sizeData'].value, 1))
+        self.ids['alphaInfo'].text = str(round(self.ids['alphaData'].value, 2))
 
 class NewTranslatorApp(App):
 

@@ -1,16 +1,22 @@
 #:import Factory kivy.factory.Factory
+<Dummy>:
+    Button:
+        background_normal: ''
+        background_down: ''
+        background_color: (0, 0, 0, 0)
+
 <MainScreen>:
+    canvas:
+        Color:
+            rgba:(self.r, self.g, self.b, self.a)
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: "data/color.png"
+
     BoxLayout:
         id: mainScreen
         orientation: 'vertical'
-
-        canvas:
-			Color:
-				rgba:(1, 1, 1, .25)
-			Rectangle:
-				pos: self.pos
-				size: self.size
-                source: "data/color.png"
 
         BoxLayout:
             id: upPanel
@@ -82,25 +88,10 @@
                 size_hint_max_y: 50
                 on_press: root.closeFile()
 
-            Button:
-                background_normal: ''
-                background_down: ''
-                background_color: (0, 0, 0, 0)
-
-            Button:
-                background_normal: ''
-                background_down: ''
-                background_color: (0, 0, 0, 0)
-
-            Button:
-                background_normal: ''
-                background_down: ''
-                background_color: (0, 0, 0, 0)
-
-            Button:
-                background_normal: ''
-                background_down: ''
-                background_color: (0, 0, 0, 0)
+            Dummy:
+            Dummy:
+            Dummy:
+            Dummy:
 
             Button:
                 id: returnBTN
@@ -110,60 +101,60 @@
                 on_press: root.findBTN()
 
         BoxLayout:
-            size_hint: (1, .1)
+            size_hint: (1, .725)
+
             GridLayout:
                 cols: 2
-                rows: 2
+                rows: 4
                 padding: [10, 0, 10, 0]
                 spacing: 10
+
                 Label:
                     text: 'Найти:'
                     font_size: 20
-                    size_hint: .2, .2
+                    size_hint: 1, .05
+
                 Label:
                     text: 'Заменить:'
                     font_size: 20
-                    size_hint: .2, .2
+                    size_hint: 1, .05
+
                 TextInput:
                     id: text4find
-                    size_hint: 1, .8
-                    background_color: (0, 0, 0, .75)
-                    foreground_color: (1, 1, 1, .5)
-                TextInput:
-                    id: text4replace
-                    size_hint: 1, .8
+                    size_hint: 1, root.inputSize/10
                     background_color: (0, 0, 0, .75)
                     foreground_color: (1, 1, 1, .5)
 
-        BoxLayout:
-            size_hint: (1, .05)
-            GridLayout:
-                cols: 2
-                rows: 1
+                TextInput:
+                    id: text4replace
+                    size_hint: 1, root.inputSize/10
+                    background_color: (0, 0, 0, .75)
+                    foreground_color: (1, 1, 1, .5)
+
                 Label:
-                    text: '\nОригинал:'
+                    text: 'Оригинал:'
                     font_size: 20
-                    size_hint: .2, .2
+                    size_hint: 1, .05
+
                 Label:
-                    text: '\nПеревод:'
+                    text: 'Перевод:'
                     font_size: 20
-                    size_hint: .2, .2
-        BoxLayout:
-            id: textBox
-            size_hint: (1, .575)
-            padding: [10]
-            spacing: 10
-            TextInput:
-                id: originalTXT
-                background_color: (0, 0, 0, .75)
-                foreground_color: (1, 1, 1, .5)
-                font_size: 20
-                readonly: True
-            TextInput:
-                id: newTXT
-                background_color: (0, 0, 0, .75)
-                foreground_color: (1, 1, 1, .5)
-                font_size: 20
+                    size_hint: 1, .05
+
+                TextInput:
+                    id: originalTXT
+                    background_color: (0, 0, 0, .75)
+                    foreground_color: (1, 1, 1, .5)
+                    font_size: 20
+                    size_hint: 1, .9 - root.inputSize/10
+                    readonly: True
+
+                TextInput:
+                    id: newTXT
+                    background_color: (0, 0, 0, .75)
+                    foreground_color: (1, 1, 1, .5)
+                    font_size: 20
+                    size_hint: 1, .9 - root.inputSize/10
 
         BoxLayout:
             id: downPanel
@@ -258,6 +249,7 @@
 			Rectangle:
 				pos: self.pos
 				size: self.size
+                source: "data/color.png"
 
         BoxLayout:
             size_hint: (1, .7)
@@ -268,24 +260,63 @@
             BoxLayout:
                 spacing: 10
                 size_hint: 1, .5
-                padding: [50, 0, 50, 0]
+                padding: [50, 10, 50, 0]
                 GridLayout:
                     cols: 2
-                    rows: 2
+                    rows: 4
                     spacing: 50
+
                     Label:
                         text: 'Период автосохранений\n(в секундах)\nЧтобы отключить, введите 0'
                         font_size: 20
-                    TextInput:
-                        id: autoSavePeriod
-                        font_size: 50
+                    BoxLayout
+                        TextInput:
+                            id: autoSavePeriod
+                            font_size: 20
+                        Dummy:
+                        Dummy:
+                        Dummy:
 
                     Label:
                         text: 'Период создания бекапов\n(в секундах)\nЧтобы отключить, введите 0'
                         font_size: 20
-                    TextInput:
-                        id: backupPeriod
-                        font_size: 50
+                    BoxLayout:
+                        TextInput:
+                            id: backupPeriod
+                            font_size: 20
+                        Dummy:
+                        Dummy:
+                        Dummy:
+
+                    Label:
+                        text: 'Размер окна Поиск/Замена'
+                        font_size: 20
+                    BoxLayout:
+                        Slider:
+                            id: sizeData
+                            min: 1
+                            max: 8
+                            size_hint: .8, 1
+                            value: root.inputSize
+                        Label:
+                            id: sizeInfo
+                            size_hint: .2, 1
+                            font_size: 20
+
+                    Label:
+                        text: 'Прозрачность фона главного\nменю. (Требуется перезапуск)'
+                        font_size: 20
+                    BoxLayout:
+                        Slider:
+                            id: alphaData
+                            min: 0
+                            max: 1
+                            size_hint: .8, 1
+                            value: root.a
+                        Label:
+                            id: alphaInfo
+                            size_hint: .2, 1
+                            font_size: 20
 
 #                BoxLayout:
 #                    ColorPicker:
