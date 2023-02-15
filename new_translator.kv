@@ -1,9 +1,4 @@
 #:import Factory kivy.factory.Factory
-<Dummy>:
-    Button:
-        background_normal: ''
-        background_down: ''
-        background_color: (0, 0, 0, 0)
 
 <MainScreen>:
     canvas:
@@ -20,84 +15,108 @@
 
         BoxLayout:
             id: upPanel
-            size_hint: (1, .115)
             padding: [10]
             spacing: 3
-            ##icon resource from - https://icons8.com/icon
+            # icon resource from - https://icons8.com/icon
+            # button color - #12CF35
 
-            Button:
+            ToolTipButton:
                 id: openBTN
                 background_normal: './data/icon/open.png'
                 size_hint_max_x: 50
                 size_hint_max_y: 50
+                tooltip_txt: 'Открыть файл'
                 on_press: root.fileOpen()
 
-            Button:
+            ToolTipButton:
                 id: saveBTN
                 background_normal: './data/icon/save.png'
                 size_hint_max_x: 50
                 size_hint_max_y: 50
+                tooltip_txt: 'Сохранить перевод'
                 on_release: root.writeFile()
 
-            Button:
+            ToolTipButton:
                 id: saveBTN
                 background_normal: './data/icon/backup.png'
                 size_hint_max_x: 50
                 size_hint_max_y: 50
+                tooltip_txt: "Создать бекап"
                 on_release: root.createBackup()
 
-            Button:
+            ToolTipButton:
                 id: backBTN
                 background_normal: './data/icon/left_arrow.png'
                 size_hint_max_x: 50
                 size_hint_max_y: 50
+                tooltip_txt: "К предыдущей строке"
                 on_press: root.nextString('-')
 
-            Button
+            ToolTipButton:
                 id: forwardBTN
                 background_normal: './data/icon/right_arrow.png'
                 size_hint_max_x: 50
                 size_hint_max_y: 50
+                tooltip_txt: "К следующей строке"
                 on_press: root.nextString()
 
-            Button:
+            ToolTipButton:
                 id: returnBTN
                 background_normal: './data/icon/refresh.png'
                 size_hint_max_x: 50
                 size_hint_max_y: 50
+                tooltip_txt: "Вернуть непереведенный текст"
                 on_press: root.reFresh()
 
-            Button:
+            ToolTipButton:
                 id: tlBtn
                 background_normal: './data/icon/translate.png'
                 size_hint_max_x: 50
                 size_hint_max_y: 50
+                tooltip_txt: "Перевести онлайн"
                 on_press: root.translate()
 
-            Button:
+            ToolTipButton:
                 id: settingBTN
                 background_normal: './data/icon/setting.png'
                 size_hint_max_x: 50
                 size_hint_max_y: 50
+                tooltip_txt: "Открыть настройки"
                 on_press:root.manager.current = 'setting'
 
-            Button:
+            ToolTipButton:
                 id: settingBTN
                 background_normal: './data/icon/close.png'
                 size_hint_max_x: 50
                 size_hint_max_y: 50
+                tooltip_txt: "Закрыть файл"
                 on_press: root.closeFile()
 
-            Dummy:
-            Dummy:
-            Dummy:
-            Dummy:
+            ToolTipButton:
+                id: settingBTN
+                background_normal: './data/icon/copy.png'
+                size_hint_max_x: 50
+                size_hint_max_y: 50
+                tooltip_txt: "Копировать перевод\nв буфер обмена"
+                on_press: root.copyText()
 
-            Button:
+            Label:
+            Label:
+
+            ToolTipButton:
+                id: settingBTN
+                background_normal: './data/icon/delete.png'
+                size_hint_max_x: 50
+                size_hint_max_y: 50
+                tooltip_txt: "Очистить поиск \nи замену"
+                on_press: root.deleteText()
+
+            ToolTipButton:
                 id: returnBTN
                 background_normal: './data/icon/find.png'
                 size_hint_max_x: 50
                 size_hint_max_y: 50
+                tooltip_txt: "Найти и заменить"
                 on_press: root.findBTN()
 
         BoxLayout:
@@ -179,6 +198,7 @@
 		                id: fBTN
 		                text: 'ДАЛЬШЕ'
 		                on_press: root.nextString()
+
 		            BoxLayout:
 		                orientation: 'vertical'
 		                CodeInput:
@@ -273,9 +293,9 @@
                         TextInput:
                             id: autoSavePeriod
                             font_size: 20
-                        Dummy:
-                        Dummy:
-                        Dummy:
+                            size_hint: .25, 1
+                        BoxLayout:
+                            size_hint: .75, 1
 
                     Label:
                         text: 'Период создания бекапов\n(в секундах)\nЧтобы отключить, введите 0'
@@ -284,9 +304,9 @@
                         TextInput:
                             id: backupPeriod
                             font_size: 20
-                        Dummy:
-                        Dummy:
-                        Dummy:
+                            size_hint: .25, 1
+                        BoxLayout:
+                            size_hint: .75, 1
 
                     Label:
                         text: 'Размер окна Поиск/Замена'
@@ -402,3 +422,4 @@
                 Button:
                     text: 'Отмена'
                     on_press: root.manager.current = 'main'
+

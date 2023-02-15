@@ -8,15 +8,19 @@ import configparser
 
 from datetime import datetime
 
+import pyperclip
 from kivy.app import App
+from kivy.core.window import Window
 from kivy.factory import Factory
 from kivy.lang import Builder
 from kivy.clock import Clock
-from kivy.uix.screenmanager import ScreenManager, Screen
-from kivy.uix.widget import Widget
+from kivy.uix.popup import Popup
+from kivy.uix.screenmanager import ScreenManager, Screen, CardTransition
 
 from tkinter import filedialog as fd
 from tkinter import messagebox as mb
+
+import kivyExtended
 
 setting = configparser.ConfigParser()
 setting.read('setting.ini')
@@ -30,8 +34,7 @@ except KeyError: lastPath = os.environ['USERPROFILE'] + '/Desktop'
 
 # Загружает конфиг интерфейса
 Builder.load_file('new_translator.kv')
-
-class Dummy(Widget): pass
+percent = 0
 
 class Colors:
     r = float(setting['Color']['r']) if float(setting['Color']['r']) <= 1 else 1/255 * int(setting['Color']['r'])
@@ -40,7 +43,11 @@ class Colors:
     a = float(setting['Color']['a']) if float(setting['Color']['a']) <= 1 else 1/255 * int(setting['Color']['a'])
 
     inputSize = float(setting['Size']['text'])
+    lastFile = str(setting['File']['lastFile'])
+    position = int(setting['File']['position'])
+    allStrings = int(setting['File']['allStrings'])
     print(r, g, b, a)
+
 
 class MainScreen(Screen, Colors):
 
@@ -56,23 +63,29 @@ class MainScreen(Screen, Colors):
         Clock.schedule_interval(self.autoSave, autosave)
         Clock.schedule_interval(self.backups, backup)
 
-    def fileOpen(self):
+        if self.allStrings > self.position:
+            self.fileOpen(self.lastFile)
+
+    def fileOpen(self, filename = ''):
         if not self.values:
-            filetypes = (('Файлы Excel', '*.xlsx'),
-                        ('All files', '*.*'))
+            if filename == '':
+                filetypes = (('Файлы Excel', '*.xlsx'),
+                            ('All files', '*.*'))
 
-            self.filename = fd.askopenfilename(title = 'Выберите XLSX файл',
-                                                initialdir = lastPath,
-                                                filetypes = filetypes)
+                self.filename = fd.askopenfilename(title = 'Выберите XLSX файл',
+                                                    initialdir = lastPath,
+                                                    filetypes = filetypes)
+            else: self.filename = filename
 
-            if self.filename != '':
+            if self.filename == self.lastFile and self.allStrings == self.position:
+                mb.showinfo('СООБЩЕНИЕ', 'Файл уже переведен! Откройте другой файл.')
+
+            elif self.filename != '':
+
+                global percent
 
                 print(self.filename)
                 fName = self.filename.split('/')[-1]
-                setting.set('Main', 'path', self.filename.replace(fName, ''))
-
-                with open('setting.ini', "w") as config_file:
-                    setting.write(config_file)
 
                 self.readData = openpyxl.load_workbook(self.filename, data_only = True)
                 self.sheet = self.readData.active
@@ -81,9 +94,9 @@ class MainScreen(Screen, Colors):
 
                 p = 0
                 for row in range(1, rows):
-                    n = int((100/rows) * row)
-                    if n != p and n % 10 == 0: print(f'ЗАГРУЗКА {n}%...')
-                    p = n
+                    percent = int((100/rows) * row)
+                    if percent != p and percent % 10 == 0: print(f'ЗАГРУЗКА {percent}%...')
+                    p = percent
                     for col in range(1, cols):
                         cell = self.sheet.cell(row = row, column = col).value
 
@@ -91,10 +104,19 @@ class MainScreen(Screen, Colors):
                             val = [self.sheet.cell(row = row + 1, column = col).value, '', row + 1, col]
                             self.values.append(val)
 
+                setting.set('File', 'path', self.filename.replace(fName, ''))
+                setting.set('File', 'lastFile', self.filename)
+                setting.set('File', 'allStrings', str(len(self.values)))
+
+                with open('setting.ini', "w") as config_file:
+                    setting.write(config_file)
+
                 if self.values:
                     print('ФАЙЛ ЗАГРУЖЕН!')
-                    self.nextString(0)
-                else: mb.showinfo(title = 'Сообщение', message = 'В файле не найдено текста для перевода!')
+                    if self.filename != self.lastFile:
+                        self.nextString(0)
+                    else: self.nextString(self.position)
+                else: mb.showinfo('СООБЩЕНИЕ', 'В файле не найдено текста для перевода!')
 
                 #print(self.values)
         else: mb.showinfo('СООБЩЕНИЕ', 'Сначала закройте открытый файл!')
@@ -128,6 +150,12 @@ class MainScreen(Screen, Colors):
     def backups(self, dt):
         if self.filename != '' and backup != 0: self.createBackup()
 
+    def deleteText(self):
+        self.ids['text4find'].text = ''
+        self.ids['text4replace'].text = ''
+
+    def copyText(self): pyperclip.copy(self.ids['newTXT'].text)
+
     def closeFile(self):
         self.values = []
         self.ids['originalTXT'].text = ''
@@ -136,6 +164,15 @@ class MainScreen(Screen, Colors):
         self.ids['longLabel'].text = ''
         self.ids['percentLabel'].text = ''
         self.ids['progressBar'].value = 0
+        self.sss = 0
+
+        setting.set('File', 'lastFile', '')
+        setting.set('File', 'allStrings', '0')
+        setting.set('File', 'position', '0')
+
+        with open('setting.ini', "w") as config_file:
+            setting.write(config_file)
+
         mb.showinfo('Сообщение', f'Файл {self.filename} закрыт!')
 
     def nextString(self, step = '+'):
@@ -168,7 +205,7 @@ class MainScreen(Screen, Colors):
             if step == '+': self.sss += 1
             elif step == '-':
                 if self.sss != 0: self.sss -= 1
-                else: Factory.EOFPopup().open()
+                else: self.EOF()
             else: self.sss = int(step)
 
             o = 1 if self.values[self.sss][1] != '' else 0
@@ -181,10 +218,24 @@ class MainScreen(Screen, Colors):
             self.ids['newTXT'].text = ttt.replace(hText[:head], '')
             self.ids['originalTXT'].text = ttt
 
-        except IndexError: Factory.EOFPopup().open()
-        #print(self.values)
+            setting.set('File', 'position', str(self.sss))
+            with open('setting.ini', "w") as config_file:
+                setting.write(config_file)
+
+        except IndexError: self.EOF()
+
+    def EOF(self):
+        Factory.EOFPopup().open()
+        setting.set('File', 'position', str(self.allStrings))
+
+        with open('setting.ini', "w") as config_file:
+            setting.write(config_file)
 
     def update(self, dt):
+
+        self.ids['upPanel'].size_hint = (1, 1/Window.size[1] * 70)
+        # print(Window.size)
+
         try:
             self.ids['originalTXT'].text = str(self.values[self.sss][0])
             self.ids['rdyLabel'].text = str(self.sss + 1) + '/' + str(len(self.values)) + ' готово'
@@ -207,7 +258,6 @@ class MainScreen(Screen, Colors):
             self.ids['originalTXT'].size_hint = (1, .9 - iS/10)
             self.ids['newTXT'].size_hint = (1, .9 - iS/10)
 
-
     def reFresh(self):
         self.ids['newTXT'].text = self.ids['originalTXT'].text
 
@@ -224,7 +274,7 @@ class MainScreen(Screen, Colors):
                 if st == self.sss: self.upd()
                 count += 1
 
-        mb.showinfo(title = 'Сообщение', message = f'Выполнено {str(count)} замен')
+        mb.showinfo('Сообщение', f'Выполнено {str(count)} замен')
         print(self.values)
 
     def upd(self):
@@ -285,11 +335,12 @@ class SettingScreen(Screen, Colors):
         self.ids['sizeInfo'].text = str(round(self.ids['sizeData'].value, 1))
         self.ids['alphaInfo'].text = str(round(self.ids['alphaData'].value, 2))
 
+
 class NewTranslatorApp(App):
 
     # Создаёт интерфейс
     def build(self):
-        sm = ScreenManager()
+        sm = ScreenManager(transition = CardTransition())
         sm.add_widget(MainScreen(name = 'main'))
         sm.add_widget(SettingScreen(name = 'setting'))
 
