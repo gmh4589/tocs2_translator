@@ -5,8 +5,10 @@ from kivy.factory import Factory
 from kivy.lang import Builder
 from kivy.clock import Clock
 from kivy.properties import StringProperty, ObjectProperty
+from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.label import Label
+from kivy.uix.popup import Popup
 
 Builder.load_file('kivyExtended.kv')
 
@@ -29,12 +31,10 @@ class ToolTipButton(Button):
 
         if self._tooltip: self._tooltip = None
 
-        cls = self.tooltip_cls
+        if isinstance(self.tooltip_cls, string_types):
+            self.tooltip_cls = Factory.get(self.tooltip_cls)
 
-        if isinstance(cls, string_types):
-            cls = Factory.get(cls)
-
-        self._tooltip = cls()
+        self._tooltip = self.tooltip_cls()
         self._update_tooltip()
 
     def _update_tooltip(self, *largs):
@@ -65,4 +65,3 @@ class ToolTipButton(Button):
     def close_tooltip(self, *args): Window.remove_widget(self._tooltip)
 
     def display_tooltip(self, *args): Window.add_widget(self._tooltip)
-

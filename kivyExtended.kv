@@ -1,3 +1,4 @@
+#:import Factory kivy.factory.Factory
 
 <ToolTipButton>:
 
@@ -10,3 +11,16 @@
         Rectangle:
             size: self.size
             pos: self.pos
+
+<MessageBox@Popup>:
+    auto_dismiss: False
+    size_hint: None, None
+    size: 200, 125
+
+    Button:
+        id: popupBTN
+        text: 'ОК'
+        background_normal: ''
+        background_down: ''
+        background_color: .21, .56, .18, 1
+        on_release: root.dismiss()

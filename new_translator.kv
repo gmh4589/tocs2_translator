@@ -1,4 +1,3 @@
-#:import Factory kivy.factory.Factory
 
 <MainScreen>:
     canvas:
@@ -230,35 +229,6 @@
                         pos: self.x, self.center_y - 12
                         size: self.width * (self.value / float(self.max)) if self.max else 0, 16
                         source: 'data/green.png'
-
-<EOFPopup@Popup>:
-    auto_dismiss: False
-    title: 'Предупреждение'
-    size_hint: None, None
-    size: 220, 200
-    BoxLayout:
-        orientation: 'vertical'
-        Label:
-            text: "Конец файла!\nСохраните перевод!"
-        BoxLayout:
-            orientation: 'horizontal'
-            spacing: 10
-            padding: 10
-            Button:
-                text: 'OK'
-                on_release: root.dismiss()
-
-<SavedPopup@Popup>:
-    auto_dismiss: False
-    title: 'Сообщение'
-    size_hint: None, None
-    size: 200, 200
-    Button:
-        text: 'Сохранено!'
-        background_normal: ''
-        background_down: ''
-        background_color: .21, .56, .18, 1
-        on_release: root.dismiss()
 
 <SettingScreen>:
     BoxLayout:

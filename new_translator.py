@@ -14,11 +14,9 @@ from kivy.core.window import Window
 from kivy.factory import Factory
 from kivy.lang import Builder
 from kivy.clock import Clock
-from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import ScreenManager, Screen, CardTransition
 
 from tkinter import filedialog as fd
-from tkinter import messagebox as mb
 
 import kivyExtended
 
@@ -34,7 +32,6 @@ except KeyError: lastPath = os.environ['USERPROFILE'] + '/Desktop'
 
 # Загружает конфиг интерфейса
 Builder.load_file('new_translator.kv')
-percent = 0
 
 class Colors:
     r = float(setting['Color']['r']) if float(setting['Color']['r']) <= 1 else 1/255 * int(setting['Color']['r'])
@@ -78,11 +75,9 @@ class MainScreen(Screen, Colors):
             else: self.filename = filename
 
             if self.filename == self.lastFile and self.allStrings == self.position:
-                mb.showinfo('СООБЩЕНИЕ', 'Файл уже переведен! Откройте другой файл.')
+                Factory.MessageBox(title = 'Файл уже переведен! Откройте другой файл.').open()
 
             elif self.filename != '':
-
-                global percent
 
                 print(self.filename)
                 fName = self.filename.split('/')[-1]
@@ -114,12 +109,12 @@ class MainScreen(Screen, Colors):
                 if self.values:
                     print('ФАЙЛ ЗАГРУЖЕН!')
                     if self.filename != self.lastFile:
-                        self.nextString(0)
-                    else: self.nextString(self.position)
-                else: mb.showinfo('СООБЩЕНИЕ', 'В файле не найдено текста для перевода!')
+                        self.nextString('0')
+                    else: self.nextString(str(self.position))
+                else: Factory.MessageBox(title = 'В файле не найдено текста для перевода!').open()
 
                 #print(self.values)
-        else: mb.showinfo('СООБЩЕНИЕ', 'Сначала закройте открытый файл!')
+        else: Factory.MessageBox(title = 'Сначала закройте открытый файл!').open()
 
     def writeFile(self, auto = 0):
 
@@ -132,7 +127,7 @@ class MainScreen(Screen, Colors):
             self.readData.save(self.filename)
             now = datetime.now().strftime('%d.%m.%Y %H-%M-%S')
             if auto == 0:
-                Factory.SavedPopup().open()
+                Factory.MessageBox(title = 'Перевод сохранен!').open()
             else:
                 if autosave != 0: print(f'{now} - Автосохренение выполнено!')
 
@@ -173,7 +168,7 @@ class MainScreen(Screen, Colors):
         with open('setting.ini', "w") as config_file:
             setting.write(config_file)
 
-        mb.showinfo('Сообщение', f'Файл {self.filename} закрыт!')
+        Factory.MessageBox(title = f'Файл {self.filename} закрыт!').open()
 
     def nextString(self, step = '+'):
 
@@ -195,17 +190,17 @@ class MainScreen(Screen, Colors):
             if "(" in t: n -= 1
             return n
 
-        old = self.values[self.sss][0].split(' ')[0]
-        h = getHead(old.split(' ')[0])
-        head = old.split(' ')[0][:h]
-        self.values[self.sss][1] = head + self.ids['newTXT'].text
-        print(self.values[self.sss][1])
-
         try:
+            old = self.values[self.sss][0].split(' ')[0]
+            h = getHead(old.split(' ')[0])
+            head = old.split(' ')[0][:h]
+            self.values[self.sss][1] = head + self.ids['newTXT'].text
+            print(self.values[self.sss][1])
+
             if step == '+': self.sss += 1
             elif step == '-':
                 if self.sss != 0: self.sss -= 1
-                else: self.EOF()
+                #else: self.EOF()
             else: self.sss = int(step)
 
             o = 1 if self.values[self.sss][1] != '' else 0
@@ -222,14 +217,13 @@ class MainScreen(Screen, Colors):
             with open('setting.ini', "w") as config_file:
                 setting.write(config_file)
 
-        except IndexError: self.EOF()
+        except IndexError:
+            self.writeFile(1)
+            Factory.MessageBox(title = 'Конец файла! Перевод сохранен!').open()
+            setting.set('File', 'position', str(self.allStrings))
 
-    def EOF(self):
-        Factory.EOFPopup().open()
-        setting.set('File', 'position', str(self.allStrings))
-
-        with open('setting.ini', "w") as config_file:
-            setting.write(config_file)
+            with open('setting.ini', "w") as config_file:
+                setting.write(config_file)
 
     def update(self, dt):
 
@@ -274,7 +268,7 @@ class MainScreen(Screen, Colors):
                 if st == self.sss: self.upd()
                 count += 1
 
-        mb.showinfo('Сообщение', f'Выполнено {str(count)} замен')
+        Factory.MessageBox(title = f'Выполнено {str(count)} замен').open()
         print(self.values)
 
     def upd(self):
@@ -286,9 +280,10 @@ class MainScreen(Screen, Colors):
     def gotoBTN(self):
         try:
             goto = int(self.ids['gotoInput'].text)
-            if goto < len(self.values) + 1: self.nextString(goto - 1)
-            else: mb.showinfo(title = 'Сообщение', message = f'Вы ввели {goto}, а в файле только {len(self.values)} строк!')
-        except (TypeError, ValueError): mb.showinfo(title = 'Сообщение', message = f'Введите число от 1 до {len(self.values)}!')
+            if goto < len(self.values) + 1: self.nextString(str(goto - 1))
+            else: Factory.MessageBox(title = f'Вы ввели {goto}, а в файле только {len(self.values)} строк!').open()
+        except (TypeError, ValueError):
+            Factory.MessageBox(title = f'Введите число от 1 до {len(self.values)}!').open()
 
     def translate(self):
 
