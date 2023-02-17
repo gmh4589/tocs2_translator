@@ -1,4 +1,6 @@
+#:import Factory kivy.factory.Factory
 
+<TooltipMDIconButton@MDIconButton+MDTooltip>
 <MainScreen>:
     canvas:
         Color:
@@ -14,109 +16,81 @@
 
         BoxLayout:
             id: upPanel
-            padding: [10]
-            spacing: 3
+            pos_hint: {"center_x": .5, "center_y": .5}
             # icon resource from - https://icons8.com/icon
             # button color - #12CF35
 
-            ToolTipButton:
+            TooltipMDIconButton:
                 id: openBTN
-                background_normal: './data/icon/open.png'
-                size_hint_max_x: 50
-                size_hint_max_y: 50
-                tooltip_txt: 'Открыть файл'
+                icon: './data/icon/open.png'
+                icon_size: '48dp'
+                tooltip_text: 'Открыть файл'
+                tooltip_bg_color: (.75, .75, .75, .75)
                 on_press: root.fileOpen()
 
-            ToolTipButton:
+            TooltipMDIconButton:
                 id: saveBTN
-                background_normal: './data/icon/save.png'
-                size_hint_max_x: 50
-                size_hint_max_y: 50
-                tooltip_txt: 'Сохранить перевод'
+                icon: './data/icon/save.png'
+                icon_size: '48dp'
+                tooltip_text: 'Сохранить перевод'
+                tooltip_bg_color: (.75, .75, .75, .75)
                 on_release: root.writeFile()
 
-            ToolTipButton:
+            TooltipMDIconButton:
                 id: saveBTN
-                background_normal: './data/icon/backup.png'
-                size_hint_max_x: 50
-                size_hint_max_y: 50
-                tooltip_txt: "Создать бекап"
+                icon: './data/icon/backup.png'
+                icon_size: '48dp'
+                tooltip_text: "Создать бекап"
+                tooltip_bg_color: (.75, .75, .75, .75)
                 on_release: root.createBackup()
 
-            ToolTipButton:
+            TooltipMDIconButton:
                 id: backBTN
-                background_normal: './data/icon/left_arrow.png'
-                size_hint_max_x: 50
-                size_hint_max_y: 50
-                tooltip_txt: "К предыдущей строке"
+                icon: './data/icon/left_arrow.png'
+                icon_size: '48dp'
+                tooltip_text: "К предыдущей строке"
+                tooltip_bg_color: (.75, .75, .75, .75)
                 on_press: root.nextString('-')
 
-            ToolTipButton:
+            TooltipMDIconButton:
                 id: forwardBTN
-                background_normal: './data/icon/right_arrow.png'
-                size_hint_max_x: 50
-                size_hint_max_y: 50
-                tooltip_txt: "К следующей строке"
+                icon: './data/icon/right_arrow.png'
+                icon_size: '48dp'
+                tooltip_text: "К следующей строке"
+                tooltip_bg_color: (.75, .75, .75, .75)
                 on_press: root.nextString()
 
-            ToolTipButton:
+            TooltipMDIconButton:
                 id: returnBTN
-                background_normal: './data/icon/refresh.png'
-                size_hint_max_x: 50
-                size_hint_max_y: 50
-                tooltip_txt: "Вернуть непереведенный текст"
+                icon: './data/icon/refresh.png'
+                icon_size: '48dp'
+                tooltip_text: "Вернуть оригинальный текст"
+                tooltip_bg_color: (.75, .75, .75, .75)
                 on_press: root.reFresh()
 
-            ToolTipButton:
+            TooltipMDIconButton:
                 id: tlBtn
-                background_normal: './data/icon/translate.png'
-                size_hint_max_x: 50
-                size_hint_max_y: 50
-                tooltip_txt: "Перевести онлайн"
+                icon: './data/icon/translate.png'
+                icon_size: '48dp'
+                tooltip_text: "Перевести онлайн"
+                tooltip_bg_color: (.75, .75, .75, .75)
                 on_press: root.translate()
 
-            ToolTipButton:
+            TooltipMDIconButton:
                 id: settingBTN
-                background_normal: './data/icon/setting.png'
-                size_hint_max_x: 50
-                size_hint_max_y: 50
-                tooltip_txt: "Открыть настройки"
+                icon: './data/icon/setting.png'
+                icon_size: '48dp'
+                tooltip_text: "Открыть настройки"
+                tooltip_bg_color: (.75, .75, .75, .75)
                 on_press:root.manager.current = 'setting'
 
-            ToolTipButton:
-                id: settingBTN
-                background_normal: './data/icon/close.png'
-                size_hint_max_x: 50
-                size_hint_max_y: 50
-                tooltip_txt: "Закрыть файл"
+            TooltipMDIconButton:
+                id: closeBTN
+                icon: './data/icon/close.png'
+                icon_size: '48dp'
+                tooltip_text: "Закрыть файл"
+                tooltip_bg_color: (.75, .75, .75, .75)
                 on_press: root.closeFile()
-
-            ToolTipButton:
-                id: settingBTN
-                background_normal: './data/icon/copy.png'
-                size_hint_max_x: 50
-                size_hint_max_y: 50
-                tooltip_txt: "Копировать перевод\nв буфер обмена"
-                on_press: root.copyText()
-
-            Label:
-            Label:
-
-            ToolTipButton:
-                id: settingBTN
-                background_normal: './data/icon/delete.png'
-                size_hint_max_x: 50
-                size_hint_max_y: 50
-                tooltip_txt: "Очистить поиск \nи замену"
-                on_press: root.deleteText()
-
-            ToolTipButton:
-                id: returnBTN
-                background_normal: './data/icon/find.png'
-                size_hint_max_x: 50
-                size_hint_max_y: 50
-                tooltip_txt: "Найти и заменить"
-                on_press: root.findBTN()
 
         BoxLayout:
             size_hint: (1, .725)
@@ -193,20 +167,24 @@
 		            padding: 10
 		            spacing: 5
 
-		            Button:
+		            MDRaisedButton:
 		                id: fBTN
-		                text: 'ДАЛЬШЕ'
+		                text: '\nДАЛЬШЕ\n'
+		                font_size: '16dp'
 		                on_press: root.nextString()
 
 		            BoxLayout:
 		                orientation: 'vertical'
+		                spacing: 5
 		                CodeInput:
 		                    id: gotoInput
                             background_color: (0, 0, 0, .75)
                             foreground_color: (1, 1, 1, .5)
-                        Button:
+                            size_hint_x: .725
+                        MDRaisedButton:
                             id: gotoBTN
                             text: 'ПЕРЕЙТИ К...'
+		                    font_size: '16dp'
 		                    on_press: root.gotoBTN()
 		        BoxLayout:
 		            size_hint: (.25, 1)
@@ -230,166 +208,47 @@
                         size: self.width * (self.value / float(self.max)) if self.max else 0, 16
                         source: 'data/green.png'
 
-<SettingScreen>:
-    BoxLayout:
-        orientation: 'vertical'
-        canvas:
-			Color:
-				rgba:(root.r, root.g, root.b, root.a)
-			Rectangle:
-				pos: self.pos
-				size: self.size
-                source: "data/color.png"
+    TooltipMDIconButton:
+        id: copyBTN
+        pos_hint: {"center_x": .95, "center_y": .2}
+        icon: './data/icon/copy.png'
+        tooltip_text: "Копировать перевод\nв буфер обмена"
+        tooltip_bg_color: (.75, .75, .75, .75)
+        on_press: root.copyText('tl')
 
-        BoxLayout:
-            size_hint: (1, .7)
-            padding: [0, 10, 0, 10]
-            spacing: 10
-            orientation: 'vertical'
+    TooltipMDIconButton:
+        id: copyBTN
+        pos_hint: {"center_x": .45, "center_y": .2}
+        icon: './data/icon/copy.png'
+        tooltip_text: "Копировать оригинал\nв буфер обмена"
+        tooltip_bg_color: (.75, .75, .75, .75)
+        on_press: root.copyText('or')
 
-            BoxLayout:
-                spacing: 10
-                size_hint: 1, .5
-                padding: [50, 10, 50, 0]
-                GridLayout:
-                    cols: 2
-                    rows: 4
-                    spacing: 50
+    TooltipMDIconButton:
+        id: settingBTN
+        pos_hint: {"center_x": .93, "center_y": .8}
+        icon: './data/icon/delete.png'
+        tooltip_text: "Очистить поиск \nи замену"
+        tooltip_bg_color: (.75, .75, .75, .75)
+        on_press: root.deleteText()
 
-                    Label:
-                        text: 'Период автосохранений\n(в секундах)\nЧтобы отключить, введите 0'
-                        font_size: 20
-                    BoxLayout
-                        TextInput:
-                            id: autoSavePeriod
-                            font_size: 20
-                            size_hint: .25, 1
-                        BoxLayout:
-                            size_hint: .75, 1
+    TooltipMDIconButton:
+        id: returnBTN
+        pos_hint: {"center_x": .97, "center_y": .8}
+        icon: './data/icon/find.png'
+        tooltip_text: "Найти и заменить"
+        tooltip_bg_color: (.75, .75, .75, .75)
+        on_press: root.findBTN()
 
-                    Label:
-                        text: 'Период создания бекапов\n(в секундах)\nЧтобы отключить, введите 0'
-                        font_size: 20
-                    BoxLayout:
-                        TextInput:
-                            id: backupPeriod
-                            font_size: 20
-                            size_hint: .25, 1
-                        BoxLayout:
-                            size_hint: .75, 1
+<MessageBox@Popup>:
+    auto_dismiss: False
+    size_hint: None, None
+    size: 200, 125
 
-                    Label:
-                        text: 'Размер окна Поиск/Замена'
-                        font_size: 20
-                    BoxLayout:
-                        Slider:
-                            id: sizeData
-                            min: 1
-                            max: 8
-                            size_hint: .8, 1
-                            value: root.inputSize
-                        Label:
-                            id: sizeInfo
-                            size_hint: .2, 1
-                            font_size: 20
-
-                    Label:
-                        text: 'Прозрачность фона главного\nменю. (Требуется перезапуск)'
-                        font_size: 20
-                    BoxLayout:
-                        Slider:
-                            id: alphaData
-                            min: 0
-                            max: 1
-                            size_hint: .8, 1
-                            value: root.a
-                        Label:
-                            id: alphaInfo
-                            size_hint: .2, 1
-                            font_size: 20
-
-#                BoxLayout:
-#                    ColorPicker:
-#                        id: colorPicker
-
-            BoxLayout:
-                size_hint: 1, .2
-                Label:
-                    text: 'Онлайн-переводчик'
-                    font_size: 25
-
-                GridLayout:
-                    id: translatorBox
-                    cols: 6
-                    Label:
-                        text: "Yandex"
-                        size_hint_x: None
-                        width: 100
-                        font_size: 20
-                    CheckBox:
-                        group: "translator"
-                        id: Yandex
-                        size_hint_x: None
-                        width: 10
-                        on_active: root.checkboxClick("Yandex")
-
-                    Label:
-                        text: "Google"
-                        size_hint_x: None
-                        width: 100
-                        font_size: 20
-                    CheckBox:
-                        group: "translator"
-                        id: Google
-                        size_hint_x: None
-                        width: 10
-                        on_active: root.checkboxClick("Google")
-
-                    Label:
-                        text: "Bing"
-                        size_hint_x: None
-                        width: 100
-                        font_size: 20
-                    CheckBox:
-                        group: "translator"
-                        id: Bing
-                        size_hint_x: None
-                        width: 10
-                        on_active: root.checkboxClick("Bing")
-
-                    Label:
-                        text: "DeepL"
-                        size_hint_x: None
-                        width: 100
-                        font_size: 20
-                    CheckBox:
-                        group: "translator"
-                        id: DeepL
-                        size_hint_x: None
-                        width: 10
-                        on_active: root.checkboxClick("DeepL")
-
-                    Label:
-                        text: "Promt"
-                        size_hint_x: None
-                        width: 100
-                        font_size: 20
-                    CheckBox:
-                        group: "translator"
-                        id: Promt
-                        size_hint_x: None
-                        width: 10
-                        on_active: root.checkboxClick("Promt")
-
-            BoxLayout:
-                size_hint: (1, .2)
-                padding: [10]
-                spacing: 3
-                Button:
-                    text: 'Сохранить'
-                    on_press: root.setSetting()
-
-                Button:
-                    text: 'Отмена'
-                    on_press: root.manager.current = 'main'
-
+    Button:
+        id: popupBTN
+        text: 'ОК'
+        background_normal: ''
+        background_down: ''
+        background_color: .21, .56, .18, 1
+        on_release: root.dismiss()

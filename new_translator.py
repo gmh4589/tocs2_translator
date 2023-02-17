@@ -18,7 +18,9 @@ from kivy.uix.screenmanager import ScreenManager, Screen, CardTransition
 
 from tkinter import filedialog as fd
 
-import kivyExtended
+from kivymd.app import MDApp
+from kivymd.uix.button import MDFlatButton
+from kivymd.uix.dialog import MDDialog
 
 setting = configparser.ConfigParser()
 setting.read('setting.ini')
@@ -27,11 +29,14 @@ autosave = int(setting['Main']['autosave'])
 backup = int(setting['Main']['backup'])
 translator = setting['Main']['translator']
 
-try: lastPath = setting['Main']['path']
+fs = int(setting['Size']['font'])
+
+try: lastPath = setting['File']['path']
 except KeyError: lastPath = os.environ['USERPROFILE'] + '/Desktop'
 
 # Загружает конфиг интерфейса
 Builder.load_file('new_translator.kv')
+Builder.load_file('setting.kv')
 
 class Colors:
     r = float(setting['Color']['r']) if float(setting['Color']['r']) <= 1 else 1/255 * int(setting['Color']['r'])
@@ -43,6 +48,7 @@ class Colors:
     lastFile = str(setting['File']['lastFile'])
     position = int(setting['File']['position'])
     allStrings = int(setting['File']['allStrings'])
+    fontSize = fs
     print(r, g, b, a)
 
 
@@ -74,7 +80,7 @@ class MainScreen(Screen, Colors):
                                                     filetypes = filetypes)
             else: self.filename = filename
 
-            if self.filename == self.lastFile and self.allStrings == self.position:
+            if self.filename == self.lastFile and self.allStrings == self.position and self.filename != '':
                 Factory.MessageBox(title = 'Файл уже переведен! Откройте другой файл.').open()
 
             elif self.filename != '':
@@ -118,6 +124,8 @@ class MainScreen(Screen, Colors):
 
     def writeFile(self, auto = 0):
 
+        print(auto)
+
         if self.filename != '':
             for cell in range(len(self.values)):
                 o = 1 if self.values[cell][1] != '' else 0
@@ -127,7 +135,8 @@ class MainScreen(Screen, Colors):
             self.readData.save(self.filename)
             now = datetime.now().strftime('%d.%m.%Y %H-%M-%S')
             if auto == 0:
-                Factory.MessageBox(title = 'Перевод сохранен!').open()
+                #Factory.MessageBox(title = 'Перевод сохранен!').open()
+                MDDialog(title = 'СООБЩЕНИЕ', text = 'Перевод сохранен!', buttons = [MDFlatButton(text = "OK", on_press = self.close())]).open()
             else:
                 if autosave != 0: print(f'{now} - Автосохренение выполнено!')
 
@@ -149,26 +158,29 @@ class MainScreen(Screen, Colors):
         self.ids['text4find'].text = ''
         self.ids['text4replace'].text = ''
 
-    def copyText(self): pyperclip.copy(self.ids['newTXT'].text)
+    def copyText(self, where):
+        if where == 'tl': pyperclip.copy(self.ids['newTXT'].text)
+        if where == 'or': pyperclip.copy(self.ids['originalTXT'].text)
 
     def closeFile(self):
-        self.values = []
-        self.ids['originalTXT'].text = ''
-        self.ids['newTXT'].text = ''
-        self.ids['rdyLabel'].text = ''
-        self.ids['longLabel'].text = ''
-        self.ids['percentLabel'].text = ''
-        self.ids['progressBar'].value = 0
-        self.sss = 0
+        if self.filename != '':
+            self.values = []
+            self.ids['originalTXT'].text = ''
+            self.ids['newTXT'].text = ''
+            self.ids['rdyLabel'].text = ''
+            self.ids['longLabel'].text = ''
+            self.ids['percentLabel'].text = ''
+            self.ids['progressBar'].value = 0
+            self.sss = 0
 
-        setting.set('File', 'lastFile', '')
-        setting.set('File', 'allStrings', '0')
-        setting.set('File', 'position', '0')
+            setting.set('File', 'lastFile', '')
+            setting.set('File', 'allStrings', '0')
+            setting.set('File', 'position', '0')
 
-        with open('setting.ini', "w") as config_file:
-            setting.write(config_file)
+            with open('setting.ini', "w") as config_file:
+                setting.write(config_file)
 
-        Factory.MessageBox(title = f'Файл {self.filename} закрыт!').open()
+            Factory.MessageBox(title = f'Файл {self.filename} закрыт!', size = (300, 150)).open()
 
     def nextString(self, step = '+'):
 
@@ -190,45 +202,49 @@ class MainScreen(Screen, Colors):
             if "(" in t: n -= 1
             return n
 
-        try:
-            old = self.values[self.sss][0].split(' ')[0]
-            h = getHead(old.split(' ')[0])
-            head = old.split(' ')[0][:h]
-            self.values[self.sss][1] = head + self.ids['newTXT'].text
-            print(self.values[self.sss][1])
+        if len(self.values) != 0:
+            try:
+                old = self.values[self.sss][0].split(' ')[0]
+                h = getHead(old.split(' ')[0])
+                head = old.split(' ')[0][:h]
+                self.values[self.sss][1] = head + self.ids['newTXT'].text
+                print(self.values[self.sss][1])
 
-            if step == '+': self.sss += 1
-            elif step == '-':
-                if self.sss != 0: self.sss -= 1
-                #else: self.EOF()
-            else: self.sss = int(step)
+                if step == '+': self.sss += 1
+                elif step == '-':
+                    if self.sss != 0: self.sss -= 1
+                    #else: self.EOF()
+                else: self.sss = int(step)
 
-            o = 1 if self.values[self.sss][1] != '' else 0
+                o = 1 if self.values[self.sss][1] != '' else 0
 
-            ttt = str(self.values[self.sss][o])
+                ttt = str(self.values[self.sss][o])
 
-            hText = ttt.split(' ')[0]
-            if hText[0] == '#': head = getHead(hText)
-            else: head = 0
-            self.ids['newTXT'].text = ttt.replace(hText[:head], '')
-            self.ids['originalTXT'].text = ttt
+                hText = ttt.split(' ')[0]
+                if hText[0] == '#': head = getHead(hText)
+                else: head = 0
+                self.ids['newTXT'].text = ttt.replace(hText[:head], '')
+                self.ids['originalTXT'].text = ttt
 
-            setting.set('File', 'position', str(self.sss))
-            with open('setting.ini', "w") as config_file:
-                setting.write(config_file)
+                setting.set('File', 'position', str(self.sss))
+                with open('setting.ini', "w") as config_file:
+                    setting.write(config_file)
 
-        except IndexError:
-            self.writeFile(1)
-            Factory.MessageBox(title = 'Конец файла! Перевод сохранен!').open()
-            setting.set('File', 'position', str(self.allStrings))
+            except IndexError:
+                self.writeFile(1)
+                Factory.MessageBox(title = 'Конец файла! Перевод сохранен!').open()
+                setting.set('File', 'position', str(self.allStrings))
 
-            with open('setting.ini', "w") as config_file:
-                setting.write(config_file)
+                with open('setting.ini', "w") as config_file:
+                    setting.write(config_file)
 
     def update(self, dt):
 
+        global fs
+
         self.ids['upPanel'].size_hint = (1, 1/Window.size[1] * 70)
-        # print(Window.size)
+        self.ids['originalTXT'].font_size = fs
+        self.ids['newTXT'].font_size = fs
 
         try:
             self.ids['originalTXT'].text = str(self.values[self.sss][0])
@@ -261,15 +277,16 @@ class MainScreen(Screen, Colors):
         text4replace = str(self.ids['text4replace'].text)
         count = 0
 
-        for st in range(len(self.values)):
-            o = 1 if self.values[st][1] != '' else 0
-            if self.values[st][o].find(text4find) != -1:
-                self.values[st][1] = self.values[st][o].replace(text4find, text4replace)
-                if st == self.sss: self.upd()
-                count += 1
+        if text4find != '' and text4replace != '':
 
-        Factory.MessageBox(title = f'Выполнено {str(count)} замен').open()
-        print(self.values)
+            for st in range(len(self.values)):
+                o = 1 if self.values[st][1] != '' else 0
+                if self.values[st][o].find(text4find) != -1:
+                    self.values[st][1] = self.values[st][o].replace(text4find, text4replace)
+                    if st == self.sss: self.upd()
+                    count += 1
+
+            Factory.MessageBox(title = f'Выполнено {str(count)} замен').open()
 
     def upd(self):
         if str(self.values[self.sss][1]) == '':
@@ -278,12 +295,13 @@ class MainScreen(Screen, Colors):
             self.ids['newTXT'].text = str(self.values[self.sss][1])
 
     def gotoBTN(self):
-        try:
-            goto = int(self.ids['gotoInput'].text)
-            if goto < len(self.values) + 1: self.nextString(str(goto - 1))
-            else: Factory.MessageBox(title = f'Вы ввели {goto}, а в файле только {len(self.values)} строк!').open()
-        except (TypeError, ValueError):
-            Factory.MessageBox(title = f'Введите число от 1 до {len(self.values)}!').open()
+        if len(self.values) != 0:
+            try:
+                goto = int(self.ids['gotoInput'].text)
+                if goto < len(self.values) + 1: self.nextString(str(goto - 1))
+                else: Factory.MessageBox(title = f'Вы ввели {goto}, а в файле только {len(self.values)} строк!').open()
+            except (TypeError, ValueError):
+                Factory.MessageBox(title = f'Введите число от 1 до {len(self.values)}!').open()
 
     def translate(self):
 
@@ -320,6 +338,7 @@ class SettingScreen(Screen, Colors):
 
         setting.set('Color', 'a', self.ids['alphaInfo'].text)
         setting.set('Size', 'text', self.ids['sizeInfo'].text)
+        setting.set('Size', 'font', self.ids['fontSizeInfo'].text)
 
         with open('setting.ini', "w") as config_file:
             setting.write(config_file)
@@ -327,14 +346,20 @@ class SettingScreen(Screen, Colors):
         self.manager.current = 'main'
 
     def update(self, dt):
+        global fs
         self.ids['sizeInfo'].text = str(round(self.ids['sizeData'].value, 1))
         self.ids['alphaInfo'].text = str(round(self.ids['alphaData'].value, 2))
+        fs = int(self.ids['fontSize'].value)
+        self.ids['fontSizeInfo'].text = str(fs)
+        self.fontSize = fs
 
 
-class NewTranslatorApp(App):
+class NewTranslatorApp(MDApp):
 
     # Создаёт интерфейс
     def build(self):
+        self.theme_cls.theme_style = "Dark"
+        self.theme_cls.primary_palette = "Green"
         sm = ScreenManager(transition = CardTransition())
         sm.add_widget(MainScreen(name = 'main'))
         sm.add_widget(SettingScreen(name = 'setting'))

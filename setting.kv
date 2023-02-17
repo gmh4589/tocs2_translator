@@ -1,0 +1,183 @@
+
+<SettingScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        canvas:
+			Color:
+				rgba:(root.r, root.g, root.b, root.a)
+			Rectangle:
+				pos: self.pos
+				size: self.size
+                source: "data/color.png"
+
+        BoxLayout:
+            size_hint: (1, .75)
+            padding: [0, 10, 0, 10]
+            spacing: 10
+            orientation: 'vertical'
+
+            BoxLayout:
+                spacing: 10
+                size_hint: (1, .5)
+                padding: [50, 10, 50, 0]
+                GridLayout:
+                    cols: 2
+                    rows: 5
+                    spacing: 50
+
+                    Label:
+                        text: 'Период автосохранений (в секундах)\nЧтобы отключить, введите 0'
+                        font_size: 18
+                    BoxLayout
+                        TextInput:
+                            id: autoSavePeriod
+                            font_size: 20
+                            size_hint: .25, 1
+                            background_color: (0, 0, 0, .75)
+                            foreground_color: (1, 1, 1, .5)
+                        BoxLayout:
+                            size_hint: .75, 1
+
+                    Label:
+                        text: 'Период создания бекапов (в секундах)\nЧтобы отключить, введите 0'
+                        font_size: 18
+                    BoxLayout:
+                        TextInput:
+                            id: backupPeriod
+                            font_size: 20
+                            size_hint: .25, 1
+                            background_color: (0, 0, 0, .75)
+                            foreground_color: (1, 1, 1, .5)
+                        BoxLayout:
+                            size_hint: .75, 1
+
+                    Label:
+                        text: 'Размер окна Поиск/Замена'
+                        font_size: 18
+                    BoxLayout:
+                        Slider:
+                            id: sizeData
+                            min: 1
+                            max: 8
+                            size_hint: .8, 1
+                            value: root.inputSize
+                        Label:
+                            id: sizeInfo
+                            size_hint: .2, 1
+                            font_size: 20
+
+                    Label:
+                        text: 'Прозрачность фона главного меню.\n(Требуется перезапуск)'
+                        font_size: 18
+                    BoxLayout:
+                        Slider:
+                            id: alphaData
+                            min: 0
+                            max: 1
+                            size_hint: .8, 1
+                            value: root.a
+                        Label:
+                            id: alphaInfo
+                            size_hint: .2, 1
+                            font_size: 20
+
+                    Label:
+                        text: 'Размер шрифта'
+                        font_size: 18
+                    BoxLayout:
+                        Slider:
+                            id: fontSize
+                            min: 10
+                            max: 35
+                            size_hint: .8, 1
+                            value: root.fontSize
+                        Label:
+                            id: fontSizeInfo
+                            size_hint: .2, 1
+                            font_size: 20
+
+#                BoxLayout:
+#                    ColorPicker:
+#                        id: colorPicker
+
+            BoxLayout:
+                size_hint: (1, .2)
+                Label:
+                    text: 'Онлайн-переводчик'
+                    font_size: 18
+
+                GridLayout:
+                    id: translatorBox
+                    cols: 6
+                    Label:
+                        text: "Yandex"
+                        size_hint_x: None
+                        width: 100
+                        font_size: 20
+                    CheckBox:
+                        group: "translator"
+                        id: Yandex
+                        size_hint_x: None
+                        width: 10
+                        on_active: root.checkboxClick("Yandex")
+
+                    Label:
+                        text: "Google"
+                        size_hint_x: None
+                        width: 100
+                        font_size: 20
+                    CheckBox:
+                        group: "translator"
+                        id: Google
+                        size_hint_x: None
+                        width: 10
+                        on_active: root.checkboxClick("Google")
+
+                    Label:
+                        text: "Bing"
+                        size_hint_x: None
+                        width: 100
+                        font_size: 20
+                    CheckBox:
+                        group: "translator"
+                        id: Bing
+                        size_hint_x: None
+                        width: 10
+                        on_active: root.checkboxClick("Bing")
+
+                    Label:
+                        text: "DeepL"
+                        size_hint_x: None
+                        width: 100
+                        font_size: 20
+                    CheckBox:
+                        group: "translator"
+                        id: DeepL
+                        size_hint_x: None
+                        width: 10
+                        on_active: root.checkboxClick("DeepL")
+
+                    Label:
+                        text: "Promt"
+                        size_hint_x: None
+                        width: 100
+                        font_size: 20
+                    CheckBox:
+                        group: "translator"
+                        id: Promt
+                        size_hint_x: None
+                        width: 10
+                        on_active: root.checkboxClick("Promt")
+
+            BoxLayout:
+                size_hint: (1, .05)
+                padding: [25]
+                spacing: 25
+                MDRaisedButton:
+                    text: 'Сохранить'
+                    on_press: root.setSetting()
+
+                MDRaisedButton:
+                    text: 'Отмена'
+                    on_press: root.manager.current = 'main'
+
