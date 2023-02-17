@@ -171,13 +171,14 @@
 
             BoxLayout:
                 size_hint: (1, .05)
-                padding: [25]
-                spacing: 25
-                MDRaisedButton:
-                    text: 'Сохранить'
-                    on_press: root.setSetting()
 
-                MDRaisedButton:
-                    text: 'Отмена'
-                    on_press: root.manager.current = 'main'
+    MDRaisedButton:
+        text: 'Сохранить'
+        on_press: root.setSetting()
+        pos_hint: {"center_x": .4435, "center_y": .05}
+
+    MDRaisedButton:
+        text: 'Отмена'
+        on_press: root.manager.current = 'main'
+        pos_hint: {"center_x": .56875, "center_y": .05}
 
