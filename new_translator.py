@@ -2,6 +2,7 @@
 import os
 import shutil
 import webbrowser
+
 import pyperclip
 import openpyxl
 import configparser
@@ -9,7 +10,7 @@ import configparser
 from datetime import datetime
 
 from kivy.core.window import Window
-from kivy.factory import Factory
+#from kivy.factory import Factory
 from kivy.lang import Builder
 from kivy.clock import Clock
 from kivy.uix.screenmanager import ScreenManager, Screen, CardTransition
@@ -39,6 +40,7 @@ Builder.load_file('new_translator.kv')
 Builder.load_file('setting.kv')
 
 class Colors:
+
     r = float(setting['Color']['r']) if float(setting['Color']['r']) <= 1 else 1/255 * int(setting['Color']['r'])
     g = float(setting['Color']['g']) if float(setting['Color']['g']) <= 1 else 1/255 * int(setting['Color']['g'])
     b = float(setting['Color']['b']) if float(setting['Color']['b']) <= 1 else 1/255 * int(setting['Color']['b'])
@@ -52,8 +54,6 @@ class Colors:
     if not os.path.exists(lastFile): lastFile = ''
 
     fontSize = fs
-    print(r, g, b, a)
-
 
 class MainScreen(Screen, Colors):
 
@@ -74,10 +74,10 @@ class MainScreen(Screen, Colors):
             self.fileOpen(self.lastFile)
 
     def fileOpen(self, filename = ''):
+
         if not self.values:
             if filename == '':
-                filetypes = (('Файлы Excel', '*.xlsx'),
-                            ('All files', '*.*'))
+                filetypes = (('Файлы Excel', '*.xlsx'), ('All files', '*.*'))
 
                 self.filename = fd.askopenfilename(title = 'Выберите XLSX файл',
                                                     initialdir = lastPath,
@@ -99,10 +99,15 @@ class MainScreen(Screen, Colors):
                 cols = self.sheet.max_column
 
                 p = 0
+
                 for row in range(1, rows):
                     percent = int((100/rows) * row)
-                    if percent != p and percent % 10 == 0: print(f'ЗАГРУЗКА {percent}%...')
+
+                    if percent != p and percent % 10 == 0:
+                        print(f'ЗАГРУЗКА {percent}%...')
+
                     p = percent
+
                     for col in range(1, cols):
                         cell = self.sheet.cell(row = row, column = col).value
 
@@ -126,7 +131,6 @@ class MainScreen(Screen, Colors):
                     #Factory.MessageBox(title = 'В файле не найдено текста для перевода!').open()
                     self.showOKDialog('В файле не найдено текста для перевода!')
 
-                #print(self.values)
         else: 
             #Factory.MessageBox(title = 'Сначала закройте открытый файл!').open()
             self.showOKDialog('Сначала закройте открытый файл!')
@@ -155,7 +159,7 @@ class MainScreen(Screen, Colors):
 
         if not self.dialog:
             self.dialog = MDDialog(title = title, text = text, size_hint = size,
-                     buttons = [MDFlatButton(text = 'OK', on_release = self.closeDialog)])
+                     buttons = [MDFlatButton(text = 'OK', md_bg_color = (.07, .81, .21, 1), on_release = self.closeDialog)])
             self.dialog.open()
 
     def closeDialog(self, obj):
@@ -205,38 +209,37 @@ class MainScreen(Screen, Colors):
             #Factory.MessageBox(title = f'Файл {self.filename} закрыт!', size = (300, 150)).open()
             self.showOKDialog(f'Файл {self.filename} закрыт!', size = (1, 1))
 
+    @staticmethod
+    def getHead(t):
+        i = 0
+
+        t = t.replace("'", '')
+
+        for i in range(len(t)):
+            if t[i] == '.':
+                i += 1
+                break
+            if t[i].isalpha():
+                if t[i].islower(): break
+        else:
+            if t[-1] == 'I' or t[-1] == 'A': i = 0
+
+        n = (i - 1)
+        if "(" in t: n -= 1
+        return t.split(' ')[0][:n]
+
     def nextString(self, step = '+'):
-
-        def getHead(t):
-            i = 0
-
-            t = t.replace("'", '')
-
-            for i in range(len(t)):
-                if t[i] == '.':
-                    i += 1
-                    break
-                if t[i].isalpha():
-                    if t[i].islower(): break
-            else:
-                if t[-1] == 'I' or t[-1] == 'A': i = 0
-
-            n = (i - 1)
-            if "(" in t: n -= 1
-            return n
 
         if len(self.values) != 0:
             try:
                 old = self.values[self.sss][0].split(' ')[0]
-                h = getHead(old.split(' ')[0])
-                head = old.split(' ')[0][:h]
+                head = self.getHead(old.split(' ')[0])
                 self.values[self.sss][1] = head + self.ids['newTXT'].text
                 print(self.values[self.sss][1])
 
                 if step == '+': self.sss += 1
                 elif step == '-':
                     if self.sss != 0: self.sss -= 1
-                    #else: self.EOF()
                 else: self.sss = int(step)
 
                 o = 1 if self.values[self.sss][1] != '' else 0
@@ -244,12 +247,15 @@ class MainScreen(Screen, Colors):
                 ttt = str(self.values[self.sss][o])
 
                 hText = ttt.split(' ')[0]
-                if hText[0] == '#': head = getHead(hText)
-                else: head = 0
-                self.ids['newTXT'].text = ttt.replace(hText[:head], '')
+
+                if hText[0] == '#': head = self.getHead(hText)
+                else: head = ''
+
+                self.ids['newTXT'].text = ttt.replace(head, '')
                 self.ids['originalTXT'].text = ttt
 
                 setting.set('File', 'position', str(self.sss))
+
                 with open('setting.ini', "w") as config_file:
                     setting.write(config_file)
 
@@ -307,17 +313,19 @@ class MainScreen(Screen, Colors):
                 o = 1 if self.values[st][1] != '' else 0
                 if self.values[st][o].find(text4find) != -1:
                     self.values[st][1] = self.values[st][o].replace(text4find, text4replace)
-                    if st == self.sss: self.upd()
+
+                    if st == self.sss:
+                        if str(self.values[self.sss][1]) == '':
+                            head = self.getHead(str(self.values[self.sss][0]).split(' ')[0])
+                            self.ids['newTXT'].text = str(self.values[self.sss][0]).replace(head, '')
+                        else:
+                            head = self.getHead(str(self.values[self.sss][1]).split(' ')[0])
+                            self.ids['newTXT'].text = str(self.values[self.sss][1]).replace(head, '')
+
                     count += 1
 
             #Factory.MessageBox(title = f'Выполнено {str(count)} замен').open()
             self.showOKDialog(f'Выполнено {str(count)} замен')
-
-    def upd(self):
-        if str(self.values[self.sss][1]) == '':
-            self.ids['newTXT'].text = str(self.values[self.sss][0])
-        else:
-            self.ids['newTXT'].text = str(self.values[self.sss][1])
 
     def gotoBTN(self):
         if len(self.values) != 0:
