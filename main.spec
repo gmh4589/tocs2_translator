@@ -5,7 +5,7 @@ from kivy_deps import sdl2, glew
 from kivymd import hooks_path as kivymd_hooks_path
 
 a = Analysis(['new_translator.py'],
-             pathex=['C:\\Users\\40pja\\Desktop\\new_translator-main'],
+             pathex=,
              binaries=[],
              datas=[('new_translator.kv', '.'), ('setting.kv', '.'), ('./data/icon/*.png', 'images'), ('./data/*.png', 'images')],
              hiddenimports=[],
