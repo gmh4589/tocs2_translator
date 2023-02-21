@@ -34,4 +34,4 @@ exe = EXE(pyz,
           upx_exclude=[],
           runtime_tmpdir=None,
           console=True,
-          icon='C:\\Users\\I\\Desktop\\tocs2_translator-main\\data\\icon\\translate.ico')
+          icon='data\\icon\\translate.ico')
