@@ -2,6 +2,7 @@
 import os
 import shutil
 import webbrowser
+import enchant
 
 import pyperclip
 import openpyxl
@@ -23,6 +24,8 @@ from kivymd.uix.dialog import MDDialog
 
 setting = configparser.ConfigParser()
 setting.read('setting.ini')
+
+dictionary = enchant.Dict("ru_RU")
 
 autosave = int(setting['Main']['autosave'])
 backup = int(setting['Main']['backup'])
@@ -155,7 +158,7 @@ class MainScreen(Screen, Colors):
             else:
                 if autosave != 0: print(f'{now} - Автосохренение выполнено!')
 
-    def showOKDialog(self, text, title = 'COOБЩЕНИЕ', size = (.5, .25)):
+    def showOKDialog(self, text, title = 'СООБЩЕНИЕ', size = (.5, .25)):
 
         if not self.dialog:
             self.dialog = MDDialog(title = title, text = text, size_hint = size,
@@ -231,6 +234,7 @@ class MainScreen(Screen, Colors):
     def nextString(self, step = '+'):
 
         if len(self.values) != 0:
+
             try:
                 old = self.values[self.sss][0].split(' ')[0]
                 head = self.getHead(old.split(' ')[0])
@@ -243,9 +247,7 @@ class MainScreen(Screen, Colors):
                 else: self.sss = int(step)
 
                 o = 1 if self.values[self.sss][1] != '' else 0
-
                 ttt = str(self.values[self.sss][o])
-
                 hText = ttt.split(' ')[0]
 
                 if hText[0] == '#': head = self.getHead(hText)
@@ -272,7 +274,7 @@ class MainScreen(Screen, Colors):
 
         global fs
 
-        self.ids['upPanel'].size_hint = (1, 1/Window.size[1] * 70)
+        self.ids['upPanel'].size_hint = (1, 1 / Window.size[1] * 70)
         self.ids['originalTXT'].font_size = fs
         self.ids['newTXT'].font_size = fs
 
@@ -285,6 +287,20 @@ class MainScreen(Screen, Colors):
             self.ids['progressBar'].value = percent
 
         except IndexError: pass
+
+        signList = '!@#$%^&*()_-+=]}[{\\|~`";:/?.>,<\n\t'
+        s = self.ids['newTXT'].text
+
+        for i in range(len(signList)):
+            s = s.replace(signList[i], ' ')
+            s = s.replace('  ', ' ')
+
+        for word in s.split(' '):
+            try:
+                if not dictionary.check(word.lower()):
+                    #print(f'Слово {word} не найдено в словаре!')
+                    self.ids['spellCheck'].text = self.ids['newTXT'].text.replace(word, f'[b][color=ff3333]{word}[/color][/b]')
+            except ValueError: pass
 
         s = configparser.ConfigParser()
         s.read('setting.ini')
