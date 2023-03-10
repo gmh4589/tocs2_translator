@@ -1,6 +1,8 @@
 #:import Factory kivy.factory.Factory
 
 <TooltipMDIconButton@MDIconButton+MDTooltip>
+<InputBox@TextInput>
+
 <MainScreen>:
     canvas:
         Color:
@@ -142,8 +144,9 @@
                     size_hint: 1, .9 - root.inputSize/10
                     readonly: True
 
-                TextInput:
+                InputBox:
                     id: newTXT
+                    markup: True
                     background_color: (0, 0, 0, .75)
                     foreground_color: (1, 1, 1, 1)
                     font_size: 20
@@ -241,6 +244,11 @@
         tooltip_text: "Найти и заменить"
         tooltip_bg_color: (.75, .75, .75, .75)
         on_press: root.findBTN()
+
+    Label:
+        markup: True
+        id: spellCheck
+        pos_hint: {"center_x": .5, "center_y": .5}
 
 #<MessageBox@Popup>:
 #    auto_dismiss: False
