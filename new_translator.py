@@ -2,16 +2,15 @@
 import os
 import shutil
 import webbrowser
-import enchant
 
 import pyperclip
 import openpyxl
 import configparser
 
 from datetime import datetime
+# from enchant.checker import SpellChecker
 
 from kivy.core.window import Window
-#from kivy.factory import Factory
 from kivy.lang import Builder
 from kivy.clock import Clock
 from kivy.uix.screenmanager import ScreenManager, Screen, CardTransition
@@ -25,7 +24,8 @@ from kivymd.uix.dialog import MDDialog
 setting = configparser.ConfigParser()
 setting.read('setting.ini')
 
-dictionary = enchant.Dict("ru_RU")
+# Dictionary path: C:\Users\%username%\AppData\Local\Programs\Python\Python310\Lib\site-packages\enchant\data\mingw64\share\enchant\hunspell
+# dictionary = SpellChecker("en_RU")
 
 autosave = int(setting['Main']['autosave'])
 backup = int(setting['Main']['backup'])
@@ -33,10 +33,13 @@ translator = setting['Main']['translator']
 
 fs = int(setting['Size']['font'])
 
-try: lastPath = setting['File']['path']
-except KeyError: lastPath = os.environ['USERPROFILE'] + '/Desktop'
+try:
+    lastPath = setting['File']['path']
+except KeyError:
+    lastPath = os.environ['USERPROFILE'] + '/Desktop'
 
-if not os.path.exists(lastPath): lastPath = ''
+if not os.path.exists(lastPath):
+    lastPath = ''
 
 # Загружает конфиг интерфейса
 Builder.load_file('new_translator.kv')
@@ -54,7 +57,8 @@ class Colors:
     position = int(setting['File']['position'])
     allStrings = int(setting['File']['allStrings'])
 
-    if not os.path.exists(lastFile): lastFile = ''
+    if not os.path.exists(lastFile):
+        lastFile = ''
 
     fontSize = fs
 
@@ -88,7 +92,6 @@ class MainScreen(Screen, Colors):
             else: self.filename = filename
 
             if self.filename == self.lastFile and self.allStrings == self.position and self.filename != '':
-                #Factory.MessageBox(title = 'Файл уже переведен! Откройте другой файл.').open()
                 self.showOKDialog('Файл уже переведен! Откройте другой файл.', size = (.5, .15))
 
             elif self.filename != '':
@@ -127,15 +130,16 @@ class MainScreen(Screen, Colors):
 
                 if self.values:
                     print('ФАЙЛ ЗАГРУЖЕН!')
+
                     if self.filename != self.lastFile:
                         self.nextString('0')
-                    else: self.nextString(str(self.position))
-                else: 
-                    #Factory.MessageBox(title = 'В файле не найдено текста для перевода!').open()
+                    else:
+                        self.nextString(str(self.position))
+
+                else:
                     self.showOKDialog('В файле не найдено текста для перевода!')
 
-        else: 
-            #Factory.MessageBox(title = 'Сначала закройте открытый файл!').open()
+        else:
             self.showOKDialog('Сначала закройте открытый файл!')
 
     def on_signup(self, *args):
@@ -152,8 +156,8 @@ class MainScreen(Screen, Colors):
 
             self.readData.save(self.filename)
             now = datetime.now().strftime('%d.%m.%Y %H-%M-%S')
+
             if auto == 0:
-                #Factory.MessageBox(title = 'Перевод сохранен!').open()
                 self.showOKDialog('Перевод сохранен!')
             else:
                 if autosave != 0: print(f'{now} - Автосохренение выполнено!')
@@ -162,7 +166,8 @@ class MainScreen(Screen, Colors):
 
         if not self.dialog:
             self.dialog = MDDialog(title = title, text = text, size_hint = size,
-                     buttons = [MDFlatButton(text = 'OK', md_bg_color = (.07, .81, .21, 1), on_release = self.closeDialog)])
+                     buttons = [MDFlatButton(text = 'OK', md_bg_color = (.07, .81, .21, 1),
+                                             on_release = self.closeDialog)])
             self.dialog.open()
 
     def closeDialog(self, obj):
@@ -178,26 +183,31 @@ class MainScreen(Screen, Colors):
             print(f'{now} - Бекап создан!')
 
     def autoSave(self, dt):
-        if self.filename != '' and autosave != 0: self.writeFile(1)
+        if self.filename != '' and autosave != 0:
+            self.writeFile(1)
 
     def backups(self, dt):
-        if self.filename != '' and backup != 0: self.createBackup()
+        if self.filename != '' and backup != 0:
+            self.createBackup()
 
     def deleteText(self):
         self.ids['text4find'].text = ''
         self.ids['text4replace'].text = ''
 
     def copyText(self, where):
-        if where == 'tl': pyperclip.copy(self.ids['newTXT'].text)
-        if where == 'or': pyperclip.copy(self.ids['originalTXT'].text)
+
+        if where == 'tl':
+            pyperclip.copy(self.ids['newTXT'].text)
+        if where == 'or':
+            pyperclip.copy(self.ids['originalTXT'].text)
 
     def closeFile(self):
+
         if self.filename != '':
             self.values = []
             self.ids['originalTXT'].text = ''
             self.ids['newTXT'].text = ''
             self.ids['rdyLabel'].text = ''
-            self.ids['longLabel'].text = ''
             self.ids['percentLabel'].text = ''
             self.ids['progressBar'].value = 0
             self.sss = 0
@@ -209,7 +219,6 @@ class MainScreen(Screen, Colors):
             with open('setting.ini', "w") as config_file:
                 setting.write(config_file)
 
-            #Factory.MessageBox(title = f'Файл {self.filename} закрыт!', size = (300, 150)).open()
             self.showOKDialog(f'Файл {self.filename} закрыт!', size = (1, 1))
 
     @staticmethod
@@ -219,16 +228,21 @@ class MainScreen(Screen, Colors):
         t = t.replace("'", '')
 
         for i in range(len(t)):
+
             if t[i] == '.':
                 i += 1
                 break
+
             if t[i].isalpha():
                 if t[i].islower(): break
         else:
-            if t[-1] == 'I' or t[-1] == 'A': i = 0
+            if t[-1] == 'I' or t[-1] == 'A':
+                i = 0
 
         n = (i - 1)
-        if "(" in t: n -= 1
+
+        if "(" in t:
+            n -= 1
         return t.split(' ')[0][:n]
 
     def nextString(self, step = '+'):
@@ -241,17 +255,24 @@ class MainScreen(Screen, Colors):
                 self.values[self.sss][1] = head + self.ids['newTXT'].text
                 print(self.values[self.sss][1])
 
-                if step == '+': self.sss += 1
+                self.ids['newTXT'].hint_text = ''
+
+                if step == '+':
+                    self.sss += 1
                 elif step == '-':
-                    if self.sss != 0: self.sss -= 1
-                else: self.sss = int(step)
+                    if self.sss != 0:
+                        self.sss -= 1
+                else:
+                    self.sss = int(step)
 
                 o = 1 if self.values[self.sss][1] != '' else 0
                 ttt = str(self.values[self.sss][o])
                 hText = ttt.split(' ')[0]
 
-                if hText[0] == '#': head = self.getHead(hText)
-                else: head = ''
+                if hText[0] == '#':
+                    head = self.getHead(hText)
+                else:
+                    head = ''
 
                 self.ids['newTXT'].text = ttt.replace(head, '')
                 self.ids['originalTXT'].text = ttt
@@ -263,7 +284,6 @@ class MainScreen(Screen, Colors):
 
             except IndexError:
                 self.writeFile(1)
-                #Factory.MessageBox(title = 'Конец файла! Перевод сохранен!').open()
                 self.showOKDialog('Конец файла! Перевод сохранен!', size = (.4, .15))
                 setting.set('File', 'position', str(self.allStrings))
 
@@ -281,26 +301,19 @@ class MainScreen(Screen, Colors):
         try:
             self.ids['originalTXT'].text = str(self.values[self.sss][0])
             self.ids['rdyLabel'].text = str(self.sss + 1) + '/' + str(len(self.values)) + ' готово'
-            self.ids['longLabel'].text = str(len(self.values[self.sss][0])) + ' символов'
             percent = round(100 / len(self.values) * (self.sss + 1), 2)
             self.ids['percentLabel'].text = str(percent) + ' %'
             self.ids['progressBar'].value = percent
-
         except IndexError: pass
 
-        signList = '!@#$%^&*()_-+=]}[{\\|~`";:/?.>,<\n\t'
-        s = self.ids['newTXT'].text
-
-        for i in range(len(signList)):
-            s = s.replace(signList[i], ' ')
-            s = s.replace('  ', ' ')
-
-        for word in s.split(' '):
-            try:
-                if not dictionary.check(word.lower()):
-                    #print(f'Слово {word} не найдено в словаре!')
-                    self.ids['spellCheck'].text = self.ids['newTXT'].text.replace(word, f'[b][color=ff3333]{word}[/color][/b]')
-            except ValueError: pass
+        # dictionary.set_text(self.ids['newTXT'].text)
+        # errorList = [i.word for i in dictionary]
+        #
+        # # Проверяет орфографию
+        # if len(errorList) > 0:
+        #     self.ids['newTXT'].hint_text = f'Ошибки: {errorList}'.replace('[', '').replace(']', '').replace("'", '')
+        # else:
+        #     self.ids['newTXT'].hint_text = ''
 
         s = configparser.ConfigParser()
         s.read('setting.ini')
@@ -327,6 +340,7 @@ class MainScreen(Screen, Colors):
 
             for st in range(len(self.values)):
                 o = 1 if self.values[st][1] != '' else 0
+
                 if self.values[st][o].find(text4find) != -1:
                     self.values[st][1] = self.values[st][o].replace(text4find, text4replace)
 
@@ -340,32 +354,41 @@ class MainScreen(Screen, Colors):
 
                     count += 1
 
-            #Factory.MessageBox(title = f'Выполнено {str(count)} замен').open()
             self.showOKDialog(f'Выполнено {str(count)} замен')
 
     def gotoBTN(self):
+
         if len(self.values) != 0:
             try:
                 goto = int(self.ids['gotoInput'].text)
-                if goto < len(self.values) + 1: self.nextString(str(goto - 1))
+
+                if goto < len(self.values) + 1:
+                    self.nextString(str(goto - 1))
                 else:
-                    #Factory.MessageBox(title = f'Вы ввели {goto}, а в файле только {len(self.values)} строк!').open()
                     self.showOKDialog(f'Вы ввели {goto}, а в файле только {len(self.values)} строк!')
+
             except (TypeError, ValueError):
-                #Factory.MessageBox(title = f'Введите число от 1 до {len(self.values)}!').open()
                 self.showOKDialog(f'Введите число от 1 до {len(self.values)}!', size = (.4, .2))
 
     def translate(self):
 
-        if setting['Main']['translator'] == 'Yandex': site = 'https://translate.yandex.ru/?utm_source=main_stripe_big&lang=en-ru&text='
-        elif setting['Main']['translator'] == 'Google': site = 'https://translate.google.ru/?hl=ru&tab=rT&sl=en&tl=ru&text='
-        elif setting['Main']['translator'] == 'Bing': site = 'https://www.bing.com/translator/?text='
-        elif setting['Main']['translator'] == 'DeepL': site = 'https://www.deepl.com/translator#en/ru/'
-        elif setting['Main']['translator'] == 'Promt': site = 'https://www.translate.ru/%D0%BF%D0%B5%D1%80%D0%B5%D0%B2%D0%BE%D0%B4/%D0%B0%D0%BD%D0%B3%D0%BB%D0%B8%D0%B9%D1%81%D0%BA%D0%B8%D0%B9-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9?text='
-        else: site = ''
+        if setting['Main']['translator'] == 'Yandex':
+            site = 'https://translate.yandex.ru/?utm_source=main_stripe_big&lang=en-ru&text='
+        elif setting['Main']['translator'] == 'Google':
+            site = 'https://translate.google.ru/?hl=ru&tab=rT&sl=en&tl=ru&text='
+        elif setting['Main']['translator'] == 'Bing':
+            site = 'https://www.bing.com/translator/?text='
+        elif setting['Main']['translator'] == 'DeepL':
+            site = 'https://www.deepl.com/translator#en/ru/'
+        elif setting['Main']['translator'] == 'Promt':
+            site = 'https://www.translate.ru/%D0%BF%D0%B5%D1%80%D0%B5%D0%B2%D0%BE%D0%B4/%D0%B0%D0%BD%D0%B3%D0%BB%D0%B8%D0%B9%D1%81%D0%BA%D0%B8%D0%B9-%D1%80%D1%83%D1%81%D1%81%D0%BA%D0%B8%D0%B9?text='
+        else:
+            site = ''
 
         t = self.ids['newTXT'].text.replace('#', '')
-        if t != '' and site != '': webbrowser.open(site + t)
+
+        if t != '' and site != '':
+            webbrowser.open(site + t)
 
 class SettingScreen(Screen, Colors):
 
@@ -398,7 +421,9 @@ class SettingScreen(Screen, Colors):
         self.manager.current = 'main'
 
     def update(self, dt):
+
         global fs
+
         self.ids['sizeInfo'].text = str(round(self.ids['sizeData'].value, 1))
         self.ids['alphaInfo'].text = str(round(self.ids['alphaData'].value, 2))
         fs = int(self.ids['fontSize'].value)

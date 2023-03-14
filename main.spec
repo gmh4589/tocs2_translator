@@ -5,7 +5,7 @@ from kivy_deps import sdl2, glew
 from kivymd import hooks_path as kivymd_hooks_path
 
 a = Analysis(['new_translator.py'],
-             pathex=,
+             pathex=['C:\\Users\\40pja\\Desktop\\new_translator-main'],
              binaries=[],
              datas=[('new_translator.kv', '.'), ('setting.kv', '.'), ('./data/icon/*.png', 'images'), ('./data/*.png', 'images')],
              hiddenimports=[],
@@ -34,4 +34,4 @@ exe = EXE(pyz,
           upx_exclude=[],
           runtime_tmpdir=None,
           console=True,
-          icon='data\\icon\\translate.ico')
+          icon='C:\\Users\\I\\Desktop\\tocs2_translator-main\\data\\icon\\translate.ico')

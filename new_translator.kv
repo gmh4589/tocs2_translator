@@ -1,7 +1,14 @@
 #:import Factory kivy.factory.Factory
 
 <TooltipMDIconButton@MDIconButton+MDTooltip>
+    icon_size: '48dp'
+    tooltip_bg_color: (.75, .75, .75, .75)
+
 <InputBox@TextInput>
+#<InputBox@MDTextField>
+    mode: "fill"
+    background_color: (0, 0, 0, .75)
+    foreground_color: (1, 1, 1, 1)
 
 <MainScreen>:
     canvas:
@@ -26,74 +33,68 @@
             TooltipMDIconButton:
                 id: openBTN
                 icon: './data/icon/open.png'
-                icon_size: '48dp'
                 tooltip_text: 'Открыть файл'
-                tooltip_bg_color: (.75, .75, .75, .75)
                 on_press: root.fileOpen()
 
             TooltipMDIconButton:
                 id: saveBTN
                 icon: './data/icon/save.png'
-                icon_size: '48dp'
                 tooltip_text: 'Сохранить перевод'
-                tooltip_bg_color: (.75, .75, .75, .75)
                 on_release: root.writeFile()
 
             TooltipMDIconButton:
                 id: saveBTN
                 icon: './data/icon/backup.png'
-                icon_size: '48dp'
                 tooltip_text: "Создать бекап"
-                tooltip_bg_color: (.75, .75, .75, .75)
                 on_release: root.createBackup()
 
             TooltipMDIconButton:
                 id: backBTN
                 icon: './data/icon/left_arrow.png'
-                icon_size: '48dp'
                 tooltip_text: "К предыдущей строке"
-                tooltip_bg_color: (.75, .75, .75, .75)
                 on_press: root.nextString('-')
 
             TooltipMDIconButton:
                 id: forwardBTN
                 icon: './data/icon/right_arrow.png'
-                icon_size: '48dp'
                 tooltip_text: "К следующей строке"
-                tooltip_bg_color: (.75, .75, .75, .75)
                 on_press: root.nextString()
 
             TooltipMDIconButton:
                 id: returnBTN
                 icon: './data/icon/refresh.png'
-                icon_size: '48dp'
                 tooltip_text: "Вернуть оригинальный текст"
-                tooltip_bg_color: (.75, .75, .75, .75)
                 on_press: root.reFresh()
 
             TooltipMDIconButton:
                 id: tlBtn
                 icon: './data/icon/translate.png'
-                icon_size: '48dp'
                 tooltip_text: "Перевести онлайн"
-                tooltip_bg_color: (.75, .75, .75, .75)
                 on_press: root.translate()
 
             TooltipMDIconButton:
                 id: settingBTN
                 icon: './data/icon/setting.png'
-                icon_size: '48dp'
                 tooltip_text: "Открыть настройки"
-                tooltip_bg_color: (.75, .75, .75, .75)
                 on_press:root.manager.current = 'setting'
 
             TooltipMDIconButton:
                 id: closeBTN
                 icon: './data/icon/close.png'
-                icon_size: '48dp'
                 tooltip_text: "Закрыть файл"
-                tooltip_bg_color: (.75, .75, .75, .75)
                 on_press: root.closeFile()
+
+            TooltipMDIconButton:
+                id: settingBTN
+                icon: './data/icon/delete.png'
+                tooltip_text: "Очистить поиск \nи замену"
+                on_press: root.deleteText()
+
+            TooltipMDIconButton:
+                id: returnBTN
+                icon: './data/icon/find.png'
+                tooltip_text: "Найти и заменить"
+                on_press: root.findBTN()
 
         BoxLayout:
             size_hint: (1, .725)
@@ -114,17 +115,15 @@
                     font_size: 20
                     size_hint: 1, .05
 
-                TextInput:
+                InputBox:
                     id: text4find
+                    multiline: True
                     size_hint: 1, root.inputSize/10
-                    background_color: (0, 0, 0, .75)
-                    foreground_color: (1, 1, 1, 1)
 
-                TextInput:
+                InputBox:
                     id: text4replace
+                    multiline: True
                     size_hint: 1, root.inputSize/10
-                    background_color: (0, 0, 0, .75)
-                    foreground_color: (1, 1, 1, 1)
 
                 Label:
                     text: 'Оригинал:'
@@ -136,36 +135,36 @@
                     font_size: 20
                     size_hint: 1, .05
 
-                TextInput:
+                InputBox:
                     id: originalTXT
-                    background_color: (0, 0, 0, .75)
-                    foreground_color: (1, 1, 1, 1)
-                    font_size: 20
-                    size_hint: 1, .9 - root.inputSize/10
                     readonly: True
+                    multiline: True
+                    size_hint: 1, .9 - root.inputSize/10
 
                 InputBox:
                     id: newTXT
-                    markup: True
-                    background_color: (0, 0, 0, .75)
-                    foreground_color: (1, 1, 1, 1)
-                    font_size: 20
+                    multiline: True
                     size_hint: 1, .9 - root.inputSize/10
 
         BoxLayout:
             id: downPanel
 		    size_hint: (1, .15)
+
 		    GridLayout:
 		        rows: 2
-		        cols: 2
-		        Label:
+		        cols: 1
+		        padding: [20, 0, 0, 0]
+
+		        MDLabel:
 		            id: rdyLabel
                     font_size: 25
-		        Label:
-		            id: longLabel
+
+                MDLabel:
+                    id: percentLabel
                     font_size: 25
 
 		    BoxLayout:
+
 		        BoxLayout:
 		            size_hint: (.75, 1)
 		            padding: 10
@@ -180,42 +179,28 @@
 		            BoxLayout:
 		                orientation: 'vertical'
 		                spacing: 5
+
 		                CodeInput:
 		                    id: gotoInput
                             background_color: (0, 0, 0, .75)
                             foreground_color: (1, 1, 1, .5)
-                            size_hint_x: .725
+                            size_hint_x: .475
+
                         MDRaisedButton:
                             id: gotoBTN
                             text: 'ПЕРЕЙТИ К...'
 		                    font_size: '16dp'
 		                    on_press: root.gotoBTN()
-		        BoxLayout:
-		            size_hint: (.25, 1)
-		            Label:
-		                id: percentLabel
-		                font_size: 25
 
 		BoxLayout:
 		    size_hint: (1, .01)
 		    MDProgressBar:
 		        id: progressBar
 		        color: (.1, .8, .2, 1)
-#                canvas:
-#                    BorderImage:
-#                        border: (12, 12, 12, 12)
-#                        pos: self.x, self.center_y - 12
-#                        size: self.width, 16
-#                        source: 'data/grey.png'
-#                    BorderImage:
-#                        border: [int(min(self.width * (self.value / float(self.max)) if self.max else 0, 12))] * 4
-#                        pos: self.x, self.center_y - 12
-#                        size: self.width * (self.value / float(self.max)) if self.max else 0, 16
-#                        source: 'data/green.png'
 
     TooltipMDIconButton:
         id: copyBTN
-        pos_hint: {"center_x": .95, "center_y": .2}
+        pos_hint: {"center_x": .95, "center_y": .1}
         icon: './data/icon/copy.png'
         tooltip_text: "Копировать перевод\nв буфер обмена"
         tooltip_bg_color: (.75, .75, .75, .75)
@@ -223,42 +208,9 @@
 
     TooltipMDIconButton:
         id: copyBTN
-        pos_hint: {"center_x": .45, "center_y": .2}
+        pos_hint: {"center_x": .45, "center_y": .1}
         icon: './data/icon/copy.png'
         tooltip_text: "Копировать оригинал\nв буфер обмена"
         tooltip_bg_color: (.75, .75, .75, .75)
         on_press: root.copyText('or')
 
-    TooltipMDIconButton:
-        id: settingBTN
-        pos_hint: {"center_x": .93, "center_y": .8}
-        icon: './data/icon/delete.png'
-        tooltip_text: "Очистить поиск \nи замену"
-        tooltip_bg_color: (.75, .75, .75, .75)
-        on_press: root.deleteText()
-
-    TooltipMDIconButton:
-        id: returnBTN
-        pos_hint: {"center_x": .97, "center_y": .8}
-        icon: './data/icon/find.png'
-        tooltip_text: "Найти и заменить"
-        tooltip_bg_color: (.75, .75, .75, .75)
-        on_press: root.findBTN()
-
-    Label:
-        markup: True
-        id: spellCheck
-        pos_hint: {"center_x": .5, "center_y": .5}
-
-#<MessageBox@Popup>:
-#    auto_dismiss: False
-#    size_hint: None, None
-#    size: 200, 125
-#
-#    Button:
-#        id: popupBTN
-#        text: 'ОК'
-#        background_normal: ''
-#        background_down: ''
-#        background_color: .21, .56, .18, 1
-#        on_release: root.dismiss()
