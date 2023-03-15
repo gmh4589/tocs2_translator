@@ -77,7 +77,7 @@ class MainScreen(Screen, Colors):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         Clock.schedule_interval(self.update, .1)
-        Clock.schedule_interval(self.sCheck, 1)
+        Clock.schedule_interval(self.sCheck, .5)
         Clock.schedule_interval(self.autoSave, autosave)
         Clock.schedule_interval(self.backups, backup)
 
