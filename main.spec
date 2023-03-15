@@ -7,7 +7,7 @@ from kivymd import hooks_path as kivymd_hooks_path
 a = Analysis(['new_translator.py'],
              pathex=['C:\\Users\\40pja\\Desktop\\new_translator-main'],
              binaries=[],
-             datas=[('new_translator.kv', '.'), ('setting.kv', '.'), ('./data/icon/*.png', 'images'), ('./data/*.png', 'images')],
+             datas=[('new_translator.kv', '.'), ('setting.kv', '.'), ('C:/Users/I/AppData/Local/Programs/Python/Python310/Lib/site-packages/enchant/data/mingw64/share/enchant/hunspell/en_RU.*', '.'), ('./data/icon/*.png', 'images'), ('./data/*.png', 'images')],
              hiddenimports=[],
              hookspath=[kivymd_hooks_path],
              runtime_hooks=[],

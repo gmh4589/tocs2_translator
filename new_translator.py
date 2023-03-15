@@ -6,6 +6,7 @@ import webbrowser
 import pyperclip
 import openpyxl
 import configparser
+import spellchecker
 
 from datetime import datetime
 # from enchant.checker import SpellChecker
@@ -20,6 +21,8 @@ from tkinter import filedialog as fd
 from kivymd.app import MDApp
 from kivymd.uix.button import MDFlatButton
 from kivymd.uix.dialog import MDDialog
+
+Window.size = (872, 600)
 
 setting = configparser.ConfigParser()
 setting.read('setting.ini')
@@ -74,6 +77,7 @@ class MainScreen(Screen, Colors):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         Clock.schedule_interval(self.update, .1)
+        Clock.schedule_interval(self.sCheck, 1)
         Clock.schedule_interval(self.autoSave, autosave)
         Clock.schedule_interval(self.backups, backup)
 
@@ -141,10 +145,6 @@ class MainScreen(Screen, Colors):
 
         else:
             self.showOKDialog('Сначала закройте открытый файл!')
-
-    def on_signup(self, *args):
-        self.dialog_close()
-        self.sm.current = 'ninput'
 
     def writeFile(self, auto = 0):
 
@@ -306,15 +306,6 @@ class MainScreen(Screen, Colors):
             self.ids['progressBar'].value = percent
         except IndexError: pass
 
-        # dictionary.set_text(self.ids['newTXT'].text)
-        # errorList = [i.word for i in dictionary]
-        #
-        # # Проверяет орфографию
-        # if len(errorList) > 0:
-        #     self.ids['newTXT'].hint_text = f'Ошибки: {errorList}'.replace('[', '').replace(']', '').replace("'", '')
-        # else:
-        #     self.ids['newTXT'].hint_text = ''
-
         s = configparser.ConfigParser()
         s.read('setting.ini')
 
@@ -326,6 +317,18 @@ class MainScreen(Screen, Colors):
             self.ids['text4replace'].size_hint = (1, iS/10)
             self.ids['originalTXT'].size_hint = (1, .9 - iS/10)
             self.ids['newTXT'].size_hint = (1, .9 - iS/10)
+
+    def sCheck(self, dt):
+        errorList = spellchecker.spellCheck(self.ids['newTXT'].text)
+
+        if len(errorList) > 0:
+            self.ids['newTXT'].hint_text = f'Ошибки: {errorList}'.replace('[', '').replace(']', '').replace("'", '')
+        else:
+            self.ids['newTXT'].hint_text = ''
+
+    def addToDic(self):
+        errorList = spellchecker.spellCheck(self.ids['newTXT'].text)
+        spellchecker.addWords(errorList)
 
     def reFresh(self):
         self.ids['newTXT'].text = self.ids['originalTXT'].text

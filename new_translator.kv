@@ -4,8 +4,8 @@
     icon_size: '48dp'
     tooltip_bg_color: (.75, .75, .75, .75)
 
-<InputBox@TextInput>
-#<InputBox@MDTextField>
+#<InputBox@TextInput>
+<InputBox@MDTextField>
     mode: "fill"
     background_color: (0, 0, 0, .75)
     foreground_color: (1, 1, 1, 1)
@@ -76,7 +76,13 @@
                 id: settingBTN
                 icon: './data/icon/setting.png'
                 tooltip_text: "Открыть настройки"
-                on_press:root.manager.current = 'setting'
+                on_press: root.manager.current = 'setting'
+
+            TooltipMDIconButton:
+                id: settingBTN
+                icon: './data/icon/dictionary.png'
+                tooltip_text: "Добавить в словарь"
+                on_press: root.addToDic()
 
             TooltipMDIconButton:
                 id: closeBTN
