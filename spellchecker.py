@@ -9,6 +9,7 @@ dicList = [ruDictionary, enDictionary, ruGameDictionary, enGameDictionary, userD
 wordList = []
 
 for dic in dicList:
+
     try:
         with open(dic, 'r') as d:
             words = d.readlines()
@@ -17,6 +18,7 @@ for dic in dicList:
                 words[i] = words[i].replace('\n', '').split('/')[0]
 
             wordList += words
+
     except FileNotFoundError: pass
 
 def spellCheck(string4Check):
@@ -30,7 +32,9 @@ def spellCheck(string4Check):
     errorList = []
 
     for w in wordL:
+
         if w.lower() not in wordList and len(w) > 0:
+
             try:
                 float(w)
             except ValueError:
@@ -39,7 +43,9 @@ def spellCheck(string4Check):
     return errorList
 
 def addWords(wl):
+
     for word in wl:
+
         with open(userDictionary, 'a') as ud:
             ud.write(f'{word.lower()}\n')
 

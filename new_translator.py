@@ -87,9 +87,9 @@ class MainScreen(Screen, Colors):
     def fileOpen(self, filename = ''):
 
         if not self.values:
+
             if filename == '':
                 filetypes = (('Файлы Excel', '*.xlsx'), ('All files', '*.*'))
-
                 self.filename = fd.askopenfilename(title = 'Выберите XLSX файл',
                                                     initialdir = lastPath,
                                                     filetypes = filetypes)
@@ -97,7 +97,6 @@ class MainScreen(Screen, Colors):
 
             if self.filename == self.lastFile and self.allStrings == self.position and self.filename != '':
                 self.showOKDialog('Файл уже переведен! Откройте другой файл.', size = (.5, .15))
-
             elif self.filename != '':
 
                 print(self.filename)
@@ -139,16 +138,15 @@ class MainScreen(Screen, Colors):
                         self.nextString('0')
                     else:
                         self.nextString(str(self.position))
-
                 else:
                     self.showOKDialog('В файле не найдено текста для перевода!')
-
         else:
             self.showOKDialog('Сначала закройте открытый файл!')
 
     def writeFile(self, auto = 0):
 
         if self.filename != '':
+
             for cell in range(len(self.values)):
                 o = 1 if self.values[cell][1] != '' else 0
                 self.sheet.cell(row = int(self.values[cell][2]),
@@ -160,7 +158,8 @@ class MainScreen(Screen, Colors):
             if auto == 0:
                 self.showOKDialog('Перевод сохранен!')
             else:
-                if autosave != 0: print(f'{now} - Автосохренение выполнено!')
+                if autosave != 0:
+                    print(f'{now} - Автосохренение выполнено!')
 
     def showOKDialog(self, text, title = 'СООБЩЕНИЕ', size = (.5, .25)):
 
@@ -183,10 +182,12 @@ class MainScreen(Screen, Colors):
             print(f'{now} - Бекап создан!')
 
     def autoSave(self, dt):
+
         if self.filename != '' and autosave != 0:
             self.writeFile(1)
 
     def backups(self, dt):
+
         if self.filename != '' and backup != 0:
             self.createBackup()
 
@@ -198,7 +199,7 @@ class MainScreen(Screen, Colors):
 
         if where == 'tl':
             pyperclip.copy(self.ids['newTXT'].text)
-        if where == 'or':
+        elif where == 'or':
             pyperclip.copy(self.ids['originalTXT'].text)
 
     def closeFile(self):
@@ -243,6 +244,7 @@ class MainScreen(Screen, Colors):
 
         if "(" in t:
             n -= 1
+
         return t.split(' ')[0][:n]
 
     def nextString(self, step = '+'):
@@ -260,6 +262,7 @@ class MainScreen(Screen, Colors):
                 if step == '+':
                     self.sss += 1
                 elif step == '-':
+
                     if self.sss != 0:
                         self.sss -= 1
                 else:
@@ -308,7 +311,6 @@ class MainScreen(Screen, Colors):
 
         s = configparser.ConfigParser()
         s.read('setting.ini')
-
         iS = float(s['Size']['text'])
 
         if iS != self.inputSize:
@@ -348,6 +350,7 @@ class MainScreen(Screen, Colors):
                     self.values[st][1] = self.values[st][o].replace(text4find, text4replace)
 
                     if st == self.sss:
+
                         if str(self.values[self.sss][1]) == '':
                             head = self.getHead(str(self.values[self.sss][0]).split(' ')[0])
                             self.ids['newTXT'].text = str(self.values[self.sss][0]).replace(head, '')
@@ -362,6 +365,7 @@ class MainScreen(Screen, Colors):
     def gotoBTN(self):
 
         if len(self.values) != 0:
+
             try:
                 goto = int(self.ids['gotoInput'].text)
 
@@ -401,7 +405,6 @@ class SettingScreen(Screen, Colors):
         super().__init__(**kwargs)
         self.ids['autoSavePeriod'].text = str(autosave)
         self.ids['backupPeriod'].text = str(backup)
-
         self.ids[translator].state = 'down'
 
         Clock.schedule_interval(self.update, .1)
@@ -413,7 +416,6 @@ class SettingScreen(Screen, Colors):
         setting.set('Main', 'autosave', self.ids['autoSavePeriod'].text)
         setting.set('Main', 'backup', self.ids['backupPeriod'].text)
         setting.set('Main', 'translator', self.tl)
-
         setting.set('Color', 'a', self.ids['alphaInfo'].text)
         setting.set('Size', 'text', self.ids['sizeInfo'].text)
         setting.set('Size', 'font', self.ids['fontSizeInfo'].text)
