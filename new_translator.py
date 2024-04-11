@@ -48,12 +48,12 @@ if not os.path.exists(lastPath):
 Builder.load_file('new_translator.kv')
 Builder.load_file('setting.kv')
 
-class Colors:
 
-    r = float(setting['Color']['r']) if float(setting['Color']['r']) <= 1 else 1/255 * int(setting['Color']['r'])
-    g = float(setting['Color']['g']) if float(setting['Color']['g']) <= 1 else 1/255 * int(setting['Color']['g'])
-    b = float(setting['Color']['b']) if float(setting['Color']['b']) <= 1 else 1/255 * int(setting['Color']['b'])
-    a = float(setting['Color']['a']) if float(setting['Color']['a']) <= 1 else 1/255 * int(setting['Color']['a'])
+class Colors:
+    r = float(setting['Color']['r']) if float(setting['Color']['r']) <= 1 else 1 / 255 * int(setting['Color']['r'])
+    g = float(setting['Color']['g']) if float(setting['Color']['g']) <= 1 else 1 / 255 * int(setting['Color']['g'])
+    b = float(setting['Color']['b']) if float(setting['Color']['b']) <= 1 else 1 / 255 * int(setting['Color']['b'])
+    a = float(setting['Color']['a']) if float(setting['Color']['a']) <= 1 else 1 / 255 * int(setting['Color']['a'])
 
     inputSize = float(setting['Size']['text'])
     lastFile = str(setting['File']['lastFile'])
@@ -65,8 +65,8 @@ class Colors:
 
     fontSize = fs
 
-class MainScreen(Screen, Colors):
 
+class MainScreen(Screen, Colors):
     values = []
     filename = ''
     sheet = ''
@@ -84,25 +84,26 @@ class MainScreen(Screen, Colors):
         if self.allStrings > self.position:
             self.fileOpen(self.lastFile)
 
-    def fileOpen(self, filename = ''):
+    def fileOpen(self, filename=''):
 
         if not self.values:
 
             if filename == '':
                 filetypes = (('Файлы Excel', '*.xlsx'), ('All files', '*.*'))
-                self.filename = fd.askopenfilename(title = 'Выберите XLSX файл',
-                                                    initialdir = lastPath,
-                                                    filetypes = filetypes)
-            else: self.filename = filename
+                self.filename = fd.askopenfilename(title='Выберите XLSX файл',
+                                                   initialdir=lastPath,
+                                                   filetypes=filetypes)
+            else:
+                self.filename = filename
 
             if self.filename == self.lastFile and self.allStrings == self.position and self.filename != '':
-                self.showOKDialog('Файл уже переведен! Откройте другой файл.', size = (.5, .15))
+                self.showOKDialog('Файл уже переведен! Откройте другой файл.', size=(.5, .15))
             elif self.filename != '':
 
                 print(self.filename)
                 fName = self.filename.split('/')[-1]
 
-                self.readData = openpyxl.load_workbook(self.filename, data_only = True)
+                self.readData = openpyxl.load_workbook(self.filename, data_only=True)
                 self.sheet = self.readData.active
                 rows = self.sheet.max_row
                 cols = self.sheet.max_column
@@ -110,7 +111,7 @@ class MainScreen(Screen, Colors):
                 p = 0
 
                 for row in range(1, rows):
-                    percent = int((100/rows) * row)
+                    percent = int((100 / rows) * row)
 
                     if percent != p and percent % 10 == 0:
                         print(f'ЗАГРУЗКА {percent}%...')
@@ -118,10 +119,10 @@ class MainScreen(Screen, Colors):
                     p = percent
 
                     for col in range(1, cols):
-                        cell = self.sheet.cell(row = row, column = col).value
+                        cell = self.sheet.cell(row=row, column=col).value
 
                         if cell == 'dialog':
-                            val = [self.sheet.cell(row = row + 1, column = col).value, '', row + 1, col]
+                            val = [self.sheet.cell(row=row + 1, column=col).value, '', row + 1, col]
                             self.values.append(val)
 
                 setting.set('File', 'path', self.filename.replace(fName, ''))
@@ -143,14 +144,14 @@ class MainScreen(Screen, Colors):
         else:
             self.showOKDialog('Сначала закройте открытый файл!')
 
-    def writeFile(self, auto = 0):
+    def writeFile(self, auto=0):
 
         if self.filename != '':
 
             for cell in range(len(self.values)):
                 o = 1 if self.values[cell][1] != '' else 0
-                self.sheet.cell(row = int(self.values[cell][2]),
-                                column = int(self.values[cell][3])).value = self.values[cell][o]
+                self.sheet.cell(row=int(self.values[cell][2]),
+                                column=int(self.values[cell][3])).value = self.values[cell][o]
 
             self.readData.save(self.filename)
             now = datetime.now().strftime('%d.%m.%Y %H-%M-%S')
@@ -161,12 +162,12 @@ class MainScreen(Screen, Colors):
                 if autosave != 0:
                     print(f'{now} - Автосохренение выполнено!')
 
-    def showOKDialog(self, text, title = 'СООБЩЕНИЕ', size = (.5, .25)):
+    def showOKDialog(self, text, title='СООБЩЕНИЕ', size=(.5, .25)):
 
         if not self.dialog:
-            self.dialog = MDDialog(title = title, text = text, size_hint = size,
-                     buttons = [MDFlatButton(text = 'OK', md_bg_color = (.07, .81, .21, 1),
-                                             on_release = self.closeDialog)])
+            self.dialog = MDDialog(title=title, text=text, size_hint=size,
+                                   buttons=[MDFlatButton(text='OK', md_bg_color=(.07, .81, .21, 1),
+                                                         on_release=self.closeDialog)])
             self.dialog.open()
 
     def closeDialog(self, obj):
@@ -220,7 +221,7 @@ class MainScreen(Screen, Colors):
             with open('setting.ini', "w") as config_file:
                 setting.write(config_file)
 
-            self.showOKDialog(f'Файл {self.filename} закрыт!', size = (1, 1))
+            self.showOKDialog(f'Файл {self.filename} закрыт!', size=(1, 1))
 
     @staticmethod
     def getHead(t):
@@ -247,7 +248,7 @@ class MainScreen(Screen, Colors):
 
         return t.split(' ')[0][:n]
 
-    def nextString(self, step = '+'):
+    def nextString(self, step='+'):
 
         if len(self.values) != 0:
 
@@ -287,7 +288,7 @@ class MainScreen(Screen, Colors):
 
             except IndexError:
                 self.writeFile(1)
-                self.showOKDialog('Конец файла! Перевод сохранен!', size = (.4, .15))
+                self.showOKDialog('Конец файла! Перевод сохранен!', size=(.4, .15))
                 setting.set('File', 'position', str(self.allStrings))
 
                 with open('setting.ini', "w") as config_file:
@@ -307,7 +308,8 @@ class MainScreen(Screen, Colors):
             percent = round(100 / len(self.values) * (self.sss + 1), 2)
             self.ids['percentLabel'].text = str(percent) + ' %'
             self.ids['progressBar'].value = percent
-        except IndexError: pass
+        except IndexError:
+            pass
 
         s = configparser.ConfigParser()
         s.read('setting.ini')
@@ -315,10 +317,10 @@ class MainScreen(Screen, Colors):
 
         if iS != self.inputSize:
             self.inputSize = iS
-            self.ids['text4find'].size_hint = (1, iS/10)
-            self.ids['text4replace'].size_hint = (1, iS/10)
-            self.ids['originalTXT'].size_hint = (1, .9 - iS/10)
-            self.ids['newTXT'].size_hint = (1, .9 - iS/10)
+            self.ids['text4find'].size_hint = (1, iS / 10)
+            self.ids['text4replace'].size_hint = (1, iS / 10)
+            self.ids['originalTXT'].size_hint = (1, .9 - iS / 10)
+            self.ids['newTXT'].size_hint = (1, .9 - iS / 10)
 
     def sCheck(self, dt):
         errorList = spellchecker.spellCheck(self.ids['newTXT'].text)
@@ -375,7 +377,7 @@ class MainScreen(Screen, Colors):
                     self.showOKDialog(f'Вы ввели {goto}, а в файле только {len(self.values)} строк!')
 
             except (TypeError, ValueError):
-                self.showOKDialog(f'Введите число от 1 до {len(self.values)}!', size = (.4, .2))
+                self.showOKDialog(f'Введите число от 1 до {len(self.values)}!', size=(.4, .2))
 
     def translate(self):
 
@@ -397,8 +399,8 @@ class MainScreen(Screen, Colors):
         if t != '' and site != '':
             webbrowser.open(site + t)
 
-class SettingScreen(Screen, Colors):
 
+class SettingScreen(Screen, Colors):
     tl = ''
 
     def __init__(self, **kwargs):
@@ -412,7 +414,6 @@ class SettingScreen(Screen, Colors):
     def checkboxClick(self, tl1): self.tl = tl1
 
     def setSetting(self):
-
         setting.set('Main', 'autosave', self.ids['autoSavePeriod'].text)
         setting.set('Main', 'backup', self.ids['backupPeriod'].text)
         setting.set('Main', 'translator', self.tl)
@@ -426,7 +427,6 @@ class SettingScreen(Screen, Colors):
         self.manager.current = 'main'
 
     def update(self, dt):
-
         global fs
 
         self.ids['sizeInfo'].text = str(round(self.ids['sizeData'].value, 1))
@@ -442,10 +442,11 @@ class NewTranslatorApp(MDApp):
     def build(self):
         self.theme_cls.theme_style = "Dark"
         self.theme_cls.primary_palette = "Green"
-        sm = ScreenManager(transition = CardTransition())
-        sm.add_widget(MainScreen(name = 'main'))
-        sm.add_widget(SettingScreen(name = 'setting'))
+        sm = ScreenManager(transition=CardTransition())
+        sm.add_widget(MainScreen(name='main'))
+        sm.add_widget(SettingScreen(name='setting'))
 
         return sm
+
 
 NewTranslatorApp().run()

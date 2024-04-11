@@ -21,6 +21,7 @@ for dic in dicList:
 
     except FileNotFoundError: pass
 
+
 def spellCheck(string4Check):
 
     splitters = '!\'"@#$%^&*()_-+=}]{[|\\:;?/>.<,\n\t№'
@@ -41,6 +42,7 @@ def spellCheck(string4Check):
                 errorList.append(w)
 
     return errorList
+
 
 def addWords(wl):
 

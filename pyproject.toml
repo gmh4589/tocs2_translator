@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "tocs2-translator-main"
+version = "0.1.0"
+description = ""
+authors = ["gmh4589"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+kivy = "^2.3.0"
+kivymd = "^1.2.0"
+pyperclip = "^1.8.2"
+openpyxl = "^3.1.2"
+openai = "^1.17.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

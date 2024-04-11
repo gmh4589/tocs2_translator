@@ -1,2 +1,2 @@
-new_translator.exe
+new_translator.py
 pause
